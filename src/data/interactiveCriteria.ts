@@ -4,6 +4,7 @@ export type {
   EvaluationResult,
   InteractiveDisease,
   DiseaseImage,
+  LegendItem,
 } from "./criteria/types";
 export { countInGroup, sumPointsInGroup } from "./criteria/types";
 
