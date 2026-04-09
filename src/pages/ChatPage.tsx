@@ -225,7 +225,7 @@ export default function ChatPage() {
                   }`}
                 >
                   {msg.role === "assistant" ? (
-                    <div className="prose prose-sm max-w-none dark:prose-invert">
+                    <div className="prose prose-sm max-w-none dark:prose-invert [&_h1]:text-black [&_h2]:text-black [&_h3]:text-black [&_h4]:text-black [&_h5]:text-black [&_h6]:text-black [&_strong]:text-black [&_p]:text-[#888888] [&_li]:text-[#888888] [&_ol]:text-[#888888] [&_ul]:text-[#888888] [&_*]:font-['Francois_One'] [&_h1]:font-['Francois_One'] [&_h2]:font-['Francois_One'] [&_h3]:font-['Francois_One'] [&_p]:font-['Francois_One'] [&_li]:font-['Francois_One']" style={{ fontFamily: "'Francois One', sans-serif" }}>
                       <ReactMarkdown>{msg.content}</ReactMarkdown>
                     </div>
                   ) : (
