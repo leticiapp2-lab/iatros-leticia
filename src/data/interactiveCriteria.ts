@@ -392,16 +392,16 @@ const fibromialgia: InteractiveDisease = {
   image: {
     src: fibromalgiaBodyMap,
     alt: "Mapa corporal dos 9 sítios de dor para fibromialgia",
-    legend: [
-      "1 — Cabeça",
-      "2 — Braço esquerdo",
-      "3 — Braço direito",
-      "4 — Costas superior",
-      "5 — Costas inferior",
-      "6 — Peitoral",
-      "7 — Abdômen",
-      "8 — Perna direita",
-      "9 — Perna esquerda",
+    interactiveLegend: [
+      { id: "site-1", label: "1 — Cabeça" },
+      { id: "site-2", label: "2 — Braço esquerdo" },
+      { id: "site-3", label: "3 — Braço direito" },
+      { id: "site-4", label: "4 — Costas superior" },
+      { id: "site-5", label: "5 — Costas inferior" },
+      { id: "site-6", label: "6 — Peitoral" },
+      { id: "site-7", label: "7 — Abdômen" },
+      { id: "site-8", label: "8 — Perna direita" },
+      { id: "site-9", label: "9 — Perna esquerda" },
     ],
   },
   groups: [
@@ -410,25 +410,28 @@ const fibromialgia: InteractiveDisease = {
       title: "Critérios AAPT/APS",
       allRequired: true,
       items: [
-        { id: "fibro-1", label: "Dor em ≥6 de 9 sítios corporais possíveis" },
         { id: "fibro-2", label: "Problemas moderados a severos de sono OU fadiga" },
         { id: "fibro-3", label: "Sintomas presentes por ≥3 meses" },
       ],
     },
   ],
   evaluate: (checked) => {
-    const count = countInGroup(checked, fibromialgia.groups[0]);
-    const met = count === 3;
+    const siteIds = ["site-1","site-2","site-3","site-4","site-5","site-6","site-7","site-8","site-9"];
+    const siteCount = siteIds.filter(id => checked.has(id)).length;
+    const hasSites = siteCount >= 6;
+    const critCount = countInGroup(checked, fibromialgia.groups[0]);
+    const met = hasSites && critCount === 2;
+    const total = (hasSites ? 1 : 0) + critCount;
     return {
       met,
-      score: count,
+      score: total,
       maxScore: 3,
       summary: met
         ? "✅ Critérios AAPT/APS preenchidos"
-        : `❌ Critérios NÃO preenchidos (${count}/3)`,
+        : `❌ Critérios NÃO preenchidos (${total}/3)`,
       detail: met
         ? "Todos os critérios AAPT/APS 2019 para fibromialgia preenchidos."
-        : `Necessário todos os 3 critérios (atual: ${count})`,
+        : `Sítios de dor: ${siteCount}/9 (mín. 6). Critérios clínicos: ${critCount}/2.`,
     };
   },
 };

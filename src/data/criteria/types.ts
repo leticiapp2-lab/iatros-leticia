@@ -21,10 +21,16 @@ export interface EvaluationResult {
   maxScore?: number;
 }
 
+export interface LegendItem {
+  id: string;
+  label: string;
+}
+
 export interface DiseaseImage {
   src: string;
   alt: string;
   legend?: string[];
+  interactiveLegend?: LegendItem[];
 }
 
 export interface InteractiveDisease {
