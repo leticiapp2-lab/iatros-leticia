@@ -25,7 +25,7 @@ const specialtyGroups: SpecialtyGroup[] = [
   },
   {
     name: "Cardiologia",
-    diseaseIds: ["has", "dislipidemia"],
+    diseaseIds: ["hipertensao", "dislipidemia"],
   },
   {
     name: "Nefrologia",
