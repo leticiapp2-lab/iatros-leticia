@@ -12,6 +12,7 @@ import { dislipidemia } from "./criteria/dislipidemia";
 import { drc } from "./criteria/drc";
 import { hipotireoidismo } from "./criteria/hipotireoidismo";
 import { hipertireoidismo } from "./criteria/hipertireoidismo";
+import { osteoporose } from "./criteria/osteoporose";
 
 // ── Original diseases (inline for backward compat) ──
 
@@ -515,4 +516,5 @@ export const interactiveDiseases: InteractiveDisease[] = [
   drc,
   hipotireoidismo,
   hipertireoidismo,
+  osteoporose,
 ];
