@@ -11,6 +11,7 @@ export interface CriteriaGroup {
   items: CriteriaItem[];
   minRequired?: number;
   allRequired?: boolean;
+  image?: { src: string; alt: string };
 }
 
 export interface EvaluationResult {
