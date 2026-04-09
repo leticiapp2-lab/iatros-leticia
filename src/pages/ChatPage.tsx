@@ -11,6 +11,7 @@ const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
 
 const navButtons = [
   { label: "Chat Auxiliar", href: "/chat" },
+  { label: "Consulta Guiada", href: "/consulta" },
   { label: "Critérios Diagnósticos", href: "/criterios" },
   { label: "Calculadoras clínicas", href: "/calculadoras" },
   { label: "PDF editáveis", href: "/pdf" },
