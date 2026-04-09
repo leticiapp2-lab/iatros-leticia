@@ -45,6 +45,16 @@ function GroupBlock({
         <p className="text-xs mb-2 italic" style={{ color: "#545454" }}>{group.note}</p>
       )}
 
+      {group.image && (
+        <div className="mb-3 flex justify-center">
+          <img
+            src={group.image.src}
+            alt={group.image.alt}
+            className="max-w-full max-h-[400px] object-contain rounded-lg"
+          />
+        </div>
+      )}
+
       <div className="space-y-2">
         {group.items.map((item) => (
           <label

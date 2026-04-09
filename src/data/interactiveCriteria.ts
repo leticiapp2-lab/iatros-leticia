@@ -385,6 +385,7 @@ const oaJoelho: InteractiveDisease = {
 };
 
 import fibromalgiaBodyMap from "@/assets/fibromialgia-body-map.png";
+import wpiBodyMap from "@/assets/fibromialgia-wpi-body-map.png";
 
 /* ═══ FIBROMIALGIA — ACR 2016 (Revisão 2010/2011) ═══ */
 const fibroACR: InteractiveDisease = {
@@ -418,6 +419,7 @@ const fibroACR: InteractiveDisease = {
       id: "acr-wpi",
       title: "3a. Índice de Dor Generalizada — WPI (0-19)",
       note: "Áreas com dor na última semana (1 ponto cada)",
+      image: { src: wpiBodyMap, alt: "Mapa corporal das 19 áreas do WPI" },
       items: [
         { id: "wpi-1", label: "Mandíbula esquerda", points: 1 },
         { id: "wpi-2", label: "Mandíbula direita", points: 1 },
