@@ -78,7 +78,7 @@ export default function HomePage() {
                   onKeyDown={(e) => e.key === "Enter" && handleSend()}
                   placeholder="Sexo, idade, queixa principal e tempo..."
                   className="flex-1 bg-transparent outline-none text-foreground placeholder:text-muted-foreground text-base sm:text-lg"
-                  style={{ fontFamily: "'Inter', sans-serif" }}
+                  style={{ fontFamily: "'Francois One', sans-serif" }}
                 />
                 <button
                   onClick={handleSend}
