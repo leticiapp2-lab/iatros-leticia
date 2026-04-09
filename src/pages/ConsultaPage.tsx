@@ -5,6 +5,7 @@ import { ConsultaProvider, useConsulta } from "@/components/consulta/ConsultaPro
 import StepIndicator from "@/components/consulta/StepIndicator";
 import EntradaStep from "@/components/consulta/EntradaStep";
 import SubjetivoStep from "@/components/consulta/SubjetivoStep";
+import ObjetivoStep from "@/components/consulta/ObjetivoStep";
 
 const navButtons = [
   { label: "Chat Auxiliar", href: "/chat" },
@@ -80,11 +81,7 @@ function ConsultaContent() {
         <div className="mt-6">
           {state.currentStep === "entrada" && <EntradaStep />}
           {state.currentStep === "subjetivo" && <SubjetivoStep />}
-          {state.currentStep === "objetivo" && (
-            <div className="text-center py-16 text-muted-foreground">
-              <p className="text-lg">🔬 Etapa Objetivo — Em breve (Fase 2)</p>
-            </div>
-          )}
+          {state.currentStep === "objetivo" && <ObjetivoStep />}
           {state.currentStep === "avaliacao" && (
             <div className="text-center py-16 text-muted-foreground">
               <p className="text-lg">🧠 Etapa Avaliação — Em breve (Fase 3)</p>

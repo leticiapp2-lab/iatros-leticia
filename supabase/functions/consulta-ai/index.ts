@@ -120,6 +120,75 @@ const SUBJECTIVE_SUMMARY_TOOL = {
   },
 };
 
+const OBJECTIVE_CHECKLIST_PROMPT = `Você é um assistente clínico. Com base no subjetivo coletado (dados iniciais + respostas da anamnese), gere um CHECKLIST DE EXAME FÍSICO DIRECIONADO.
+
+O checklist deve incluir:
+- Sinais vitais relevantes ao caso
+- Exame geral pertinente
+- Exame físico segmentar direcionado
+- Manobras específicas quando pertinentes
+- Achados que confirmam ou afastam hipóteses
+- Sinais de gravidade
+- Itens obrigatórios ao caso
+
+REGRAS:
+- Personalize conforme o caso clínico (queixa, idade, sexo, achados do subjetivo)
+- Use tipos: yes_no para achados positivo/negativo, text para valores/descrições, select para opções
+- Marque isRedFlag achados de gravidade
+- NÃO inclua exames genéricos irrelevantes
+- Máximo 8-12 itens por grupo
+
+Você DEVE responder usando a função generate_checklist.`;
+
+const OBJECTIVE_SUMMARY_PROMPT = `Você é um assistente clínico. Com base EXCLUSIVAMENTE nos achados de exame físico preenchidos pelo usuário, gere:
+
+1. Um resumo estruturado em tópicos do exame físico (por sistemas/blocos)
+2. Um parágrafo único pronto para a seção de Objetivo do prontuário
+
+REGRAS CRÍTICAS:
+- NUNCA invente achados não preenchidos
+- Campos não preenchidos devem ser ignorados
+- Use linguagem médica objetiva e padronizada
+- O parágrafo deve ser coeso e fiel aos dados
+- Liste achados críticos/de gravidade separadamente
+
+Você DEVE responder usando a função generate_objective_summary.`;
+
+const OBJECTIVE_SUMMARY_TOOL = {
+  type: "function",
+  function: {
+    name: "generate_objective_summary",
+    description: "Gera resumo estruturado do exame físico e parágrafo para prontuário",
+    parameters: {
+      type: "object",
+      properties: {
+        structured_summary: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              category: { type: "string" },
+              content: { type: "string" },
+            },
+            required: ["category", "content"],
+          },
+          description: "Resumo estruturado por sistemas/blocos do exame físico",
+        },
+        prontuario_paragraph: {
+          type: "string",
+          description: "Parágrafo único para seção Objetivo do prontuário",
+        },
+        critical_findings: {
+          type: "array",
+          items: { type: "string" },
+          description: "Achados críticos ou de gravidade identificados",
+        },
+      },
+      required: ["structured_summary", "prontuario_paragraph", "critical_findings"],
+    },
+  },
+};
+
 const RETURN_CHECKLIST_PROMPT = `Você é um assistente clínico. O usuário está realizando uma CONSULTA DE RETORNO. Com base no SOAP anterior e na atualização fornecida, gere um checklist de anamnese focado em:
 - Evolução desde a última consulta
 - Adesão ao tratamento
@@ -183,6 +252,24 @@ serve(async (req) => {
 
         tools = [SUBJECTIVE_SUMMARY_TOOL];
         toolChoice = { type: "function", function: { name: "generate_summary" } };
+        break;
+      }
+
+      case "generate-objective-checklist": {
+        systemPrompt = OBJECTIVE_CHECKLIST_PROMPT;
+        userPrompt = `Dados iniciais:\nSexo: ${data.sex || "?"}, Idade: ${data.age || "?"}, Queixa: ${data.chiefComplaint || "?"}, Tempo: ${data.duration || "?"}\n\nResumo do Subjetivo:\n${data.subjectiveSummary || "Não disponível"}\n\nRed flags identificados:\n${JSON.stringify(data.redFlags || [])}`;
+
+        tools = [SUBJECTIVE_CHECKLIST_TOOL];
+        toolChoice = { type: "function", function: { name: "generate_checklist" } };
+        break;
+      }
+
+      case "generate-objective-summary": {
+        systemPrompt = OBJECTIVE_SUMMARY_PROMPT;
+        userPrompt = `Dados iniciais:\nSexo: ${data.sex || "?"}, Idade: ${data.age || "?"}, Queixa: ${data.chiefComplaint || "?"}\n\nResumo do Subjetivo:\n${data.subjectiveSummary || "Não disponível"}\n\nAchados do exame físico:\n${JSON.stringify(data.answers, null, 2)}\n\nObservações livres:\n${data.freeText || "Nenhuma"}`;
+
+        tools = [OBJECTIVE_SUMMARY_TOOL];
+        toolChoice = { type: "function", function: { name: "generate_objective_summary" } };
         break;
       }
 

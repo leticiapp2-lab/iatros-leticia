@@ -49,6 +49,12 @@ export interface EntradaData {
 
 export type ConsultaStep = "entrada" | "subjetivo" | "objetivo" | "avaliacao" | "plano";
 
+export interface ObjectiveSummary {
+  structured_summary: SummaryCategory[];
+  prontuario_paragraph: string;
+  critical_findings: string[];
+}
+
 export interface ConsultaState {
   currentStep: ConsultaStep;
   entrada: EntradaData | null;
@@ -56,4 +62,8 @@ export interface ConsultaState {
   subjetivoAnswers: Record<string, ChecklistAnswer>;
   subjetivoFreeText: string;
   subjetivoSummary: SubjectiveSummary | null;
+  objetivoChecklist: ChecklistGroupData[] | null;
+  objetivoAnswers: Record<string, ChecklistAnswer>;
+  objetivoFreeText: string;
+  objetivoSummary: ObjectiveSummary | null;
 }
