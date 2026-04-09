@@ -6,6 +6,8 @@ import StepIndicator from "@/components/consulta/StepIndicator";
 import EntradaStep from "@/components/consulta/EntradaStep";
 import SubjetivoStep from "@/components/consulta/SubjetivoStep";
 import ObjetivoStep from "@/components/consulta/ObjetivoStep";
+import AvaliacaoStep from "@/components/consulta/AvaliacaoStep";
+import PlanoStep from "@/components/consulta/PlanoStep";
 
 const navButtons = [
   { label: "Chat Auxiliar", href: "/chat" },
