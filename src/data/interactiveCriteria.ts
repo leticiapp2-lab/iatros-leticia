@@ -385,10 +385,126 @@ const oaJoelho: InteractiveDisease = {
 
 import fibromalgiaBodyMap from "@/assets/fibromialgia-body-map.png";
 
-const fibromialgia: InteractiveDisease = {
-  id: "fibromialgia",
-  name: "Fibromialgia",
-  shortName: "Fibromialgia",
+/* ═══ FIBROMIALGIA — ACR 2016 (Revisão 2010/2011) ═══ */
+const fibroACR: InteractiveDisease = {
+  id: "fibromialgia-acr",
+  name: "Fibromialgia — ACR 2016",
+  shortName: "Fibromialgia (ACR 2016)",
+  criteriaSetName: "ACR 2016 (Revisão 2010/2011) — Sensibilidade 86% / Especificidade 90%",
+  groups: [
+    {
+      id: "acr-regioes",
+      title: "1. Dor generalizada (≥4 de 5 regiões)",
+      note: "Marque as regiões com dor",
+      minRequired: 4,
+      items: [
+        { id: "acr-r1", label: "Ombro/braço esquerdo" },
+        { id: "acr-r2", label: "Ombro/braço direito" },
+        { id: "acr-r3", label: "Pescoço/costas" },
+        { id: "acr-r4", label: "Quadril/perna esquerda" },
+        { id: "acr-r5", label: "Quadril/perna direita" },
+      ],
+    },
+    {
+      id: "acr-duracao",
+      title: "2. Duração dos sintomas",
+      allRequired: true,
+      items: [
+        { id: "acr-dur", label: "Sintomas presentes por ≥3 meses" },
+      ],
+    },
+    {
+      id: "acr-wpi",
+      title: "3a. Índice de Dor Generalizada — WPI (0-19)",
+      note: "Áreas com dor na última semana (1 ponto cada)",
+      items: [
+        { id: "wpi-1", label: "Mandíbula esquerda", points: 1 },
+        { id: "wpi-2", label: "Mandíbula direita", points: 1 },
+        { id: "wpi-3", label: "Ombro esquerdo", points: 1 },
+        { id: "wpi-4", label: "Ombro direito", points: 1 },
+        { id: "wpi-5", label: "Braço superior esquerdo", points: 1 },
+        { id: "wpi-6", label: "Braço superior direito", points: 1 },
+        { id: "wpi-7", label: "Braço inferior esquerdo", points: 1 },
+        { id: "wpi-8", label: "Braço inferior direito", points: 1 },
+        { id: "wpi-9", label: "Quadril/nádegas esquerdo", points: 1 },
+        { id: "wpi-10", label: "Quadril/nádegas direito", points: 1 },
+        { id: "wpi-11", label: "Coxa esquerda", points: 1 },
+        { id: "wpi-12", label: "Coxa direita", points: 1 },
+        { id: "wpi-13", label: "Perna inferior esquerda", points: 1 },
+        { id: "wpi-14", label: "Perna inferior direita", points: 1 },
+        { id: "wpi-15", label: "Pescoço", points: 1 },
+        { id: "wpi-16", label: "Costas superiores", points: 1 },
+        { id: "wpi-17", label: "Costas inferiores", points: 1 },
+        { id: "wpi-18", label: "Tórax", points: 1 },
+        { id: "wpi-19", label: "Abdome", points: 1 },
+      ],
+    },
+    {
+      id: "acr-sss1",
+      title: "3b. Escala de Gravidade de Sintomas — SSS Parte 1",
+      note: "Pontue cada sintoma: 0=sem problema, 1=leve, 2=moderado, 3=grave",
+      items: [
+        { id: "sss-fadiga-1", label: "Fadiga — leve/intermitente", points: 1 },
+        { id: "sss-fadiga-2", label: "Fadiga — moderada", points: 2 },
+        { id: "sss-fadiga-3", label: "Fadiga — grave/incapacitante", points: 3 },
+        { id: "sss-sono-1", label: "Acordar sem descanso — leve", points: 1 },
+        { id: "sss-sono-2", label: "Acordar sem descanso — moderado", points: 2 },
+        { id: "sss-sono-3", label: "Acordar sem descanso — grave", points: 3 },
+        { id: "sss-cog-1", label: "Sintomas cognitivos — leves", points: 1 },
+        { id: "sss-cog-2", label: "Sintomas cognitivos — moderados", points: 2 },
+        { id: "sss-cog-3", label: "Sintomas cognitivos — graves", points: 3 },
+      ],
+    },
+    {
+      id: "acr-sss2",
+      title: "3b. SSS Parte 2 — Sintomas associados (1 pt cada)",
+      items: [
+        { id: "sss-cefaleia", label: "Cefaleia", points: 1 },
+        { id: "sss-abdome", label: "Dor ou cólicas abdominais inferiores", points: 1 },
+        { id: "sss-depressao", label: "Depressão", points: 1 },
+      ],
+    },
+  ],
+  evaluate: (checked) => {
+    // 1. Regiões ≥4/5
+    const regiaoCount = countInGroup(checked, fibroACR.groups[0]);
+    const hasRegioes = regiaoCount >= 4;
+
+    // 2. Duração
+    const hasDuracao = checked.has("acr-dur");
+
+    // 3. WPI
+    const wpi = sumPointsInGroup(checked, fibroACR.groups[2]);
+
+    // SSS part 1: take highest selected per symptom (fadiga, sono, cog)
+    const fadigaScore = checked.has("sss-fadiga-3") ? 3 : checked.has("sss-fadiga-2") ? 2 : checked.has("sss-fadiga-1") ? 1 : 0;
+    const sonoScore = checked.has("sss-sono-3") ? 3 : checked.has("sss-sono-2") ? 2 : checked.has("sss-sono-1") ? 1 : 0;
+    const cogScore = checked.has("sss-cog-3") ? 3 : checked.has("sss-cog-2") ? 2 : checked.has("sss-cog-1") ? 1 : 0;
+    const sss2 = sumPointsInGroup(checked, fibroACR.groups[4]);
+    const sss = fadigaScore + sonoScore + cogScore + sss2;
+
+    // Critério 3: (WPI≥7 E SSS≥5) OU (WPI 4-6 E SSS≥9)
+    const hasScores = (wpi >= 7 && sss >= 5) || (wpi >= 4 && wpi <= 6 && sss >= 9);
+
+    const met = hasRegioes && hasDuracao && hasScores;
+
+    return {
+      met,
+      summary: met
+        ? "✅ Critérios ACR 2016 preenchidos"
+        : "❌ Critérios ACR 2016 NÃO preenchidos",
+      detail: `Regiões: ${regiaoCount}/5 (mín. 4) | Duração ≥3m: ${hasDuracao ? "Sim" : "Não"} | WPI: ${wpi}/19 | SSS: ${sss}/12 | ${hasScores ? "Pontuação atendida" : "WPI≥7 + SSS≥5 ou WPI 4-6 + SSS≥9 necessário"}`,
+      score: wpi + sss,
+      maxScore: 31,
+    };
+  },
+};
+
+/* ═══ FIBROMIALGIA — AAPT 2019 ═══ */
+const fibroAAPT: InteractiveDisease = {
+  id: "fibromialgia-aapt",
+  name: "Fibromialgia — AAPT 2019",
+  shortName: "Fibromialgia (AAPT 2019)",
   criteriaSetName: "AAPT/APS 2019",
   image: {
     src: fibromalgiaBodyMap,
@@ -407,12 +523,12 @@ const fibromialgia: InteractiveDisease = {
   },
   groups: [
     {
-      id: "fibro-crit",
+      id: "aapt-crit",
       title: "Critérios AAPT/APS",
       allRequired: true,
       items: [
-        { id: "fibro-2", label: "Problemas moderados a severos de sono OU fadiga" },
-        { id: "fibro-3", label: "Sintomas presentes por ≥3 meses" },
+        { id: "aapt-2", label: "Problemas moderados a graves de sono OU fadiga" },
+        { id: "aapt-3", label: "Sintomas presentes por ≥3 meses" },
       ],
     },
   ],
@@ -420,7 +536,7 @@ const fibromialgia: InteractiveDisease = {
     const siteIds = ["site-1","site-2","site-3","site-4","site-5","site-6","site-7","site-8","site-9"];
     const siteCount = siteIds.filter(id => checked.has(id)).length;
     const hasSites = siteCount >= 6;
-    const critCount = countInGroup(checked, fibromialgia.groups[0]);
+    const critCount = countInGroup(checked, fibroAAPT.groups[0]);
     const met = hasSites && critCount === 2;
     const total = (hasSites ? 1 : 0) + critCount;
     return {
@@ -428,7 +544,7 @@ const fibromialgia: InteractiveDisease = {
       score: total,
       maxScore: 3,
       summary: met
-        ? "✅ Critérios AAPT/APS preenchidos"
+        ? "✅ Critérios AAPT/APS 2019 preenchidos"
         : `❌ Critérios NÃO preenchidos (${total}/3)`,
       detail: met
         ? "Todos os critérios AAPT/APS 2019 para fibromialgia preenchidos."
@@ -495,7 +611,8 @@ export const interactiveDiseases: InteractiveDisease[] = [
   ibs,
   pcos,
   oaJoelho,
-  fibromialgia,
+  fibroACR,
+  fibroAAPT,
   diabetesT2,
   has,
   dislipidemia,
