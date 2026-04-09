@@ -45,7 +45,7 @@ const specialtyGroups: SpecialtyGroup[] = [
   },
   {
     name: "Infectologia",
-    diseaseIds: ["tuberculose", "hanseniase"],
+    diseaseIds: ["tuberculose", "hanseniase", "hiv", "sifilis", "hepatite-c"],
   },
 ];
 

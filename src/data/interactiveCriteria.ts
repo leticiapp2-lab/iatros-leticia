@@ -483,4 +483,7 @@ export const interactiveDiseases: InteractiveDisease[] = [
   osteoporose,
   tuberculose,
   hanseniase,
+  hiv,
+  sifilis,
+  hepatiteC,
 ];
