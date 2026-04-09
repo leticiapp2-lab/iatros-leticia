@@ -112,10 +112,3 @@ export default function SubjetivoStep() {
     </div>
   );
 }
-        >
-          Objetivo — Em breve (Fase 2)
-        </button>
-      )}
-    </div>
-  );
-}
