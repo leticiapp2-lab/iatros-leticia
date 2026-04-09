@@ -8,6 +8,8 @@ import type {
   ChecklistAnswer,
   SubjectiveSummary,
   ObjectiveSummary,
+  AssessmentData,
+  PlanData,
 } from "./types";
 
 const CONSULTA_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/consulta-ai`;
@@ -19,11 +21,12 @@ interface ConsultaContextValue {
   updateAnswer: (itemId: string, answer: Partial<ChecklistAnswer>) => void;
   setSubjetivoFreeText: (text: string) => void;
   submitSubjetivo: () => Promise<void>;
-  // Objetivo
   updateObjetivoAnswer: (itemId: string, answer: Partial<ChecklistAnswer>) => void;
   setObjetivoFreeText: (text: string) => void;
   generateObjetivoChecklist: () => Promise<void>;
   submitObjetivo: () => Promise<void>;
+  generateAssessment: () => Promise<void>;
+  generatePlan: () => Promise<void>;
   goToStep: (step: ConsultaStep) => void;
   reset: () => void;
 }
@@ -39,6 +42,8 @@ const initialState: ConsultaState = {
   objetivoAnswers: {},
   objetivoFreeText: "",
   objetivoSummary: null,
+  assessmentData: null,
+  planData: null,
 };
 
 const ConsultaContext = createContext<ConsultaContextValue | null>(null);
@@ -67,13 +72,23 @@ export function ConsultaProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<ConsultaState>(initialState);
   const [isLoading, setIsLoading] = useState(false);
 
+  // Helper to get summary texts
+  const getSubjectiveSummaryText = useCallback(() => {
+    return state.subjetivoSummary?.structured_summary
+      .map((s) => `${s.category}: ${s.content}`)
+      .join("\n") ?? "";
+  }, [state.subjetivoSummary]);
+
+  const getObjectiveSummaryText = useCallback(() => {
+    return state.objetivoSummary?.structured_summary
+      .map((s) => `${s.category}: ${s.content}`)
+      .join("\n") ?? "";
+  }, [state.objetivoSummary]);
+
   const submitEntrada = useCallback(async (data: EntradaData) => {
     setIsLoading(true);
     try {
-      const result: { groups: ChecklistGroupData[] } = await callConsultaAI(
-        "generate-subjective-checklist",
-        data
-      );
+      const result: { groups: ChecklistGroupData[] } = await callConsultaAI("generate-subjective-checklist", data);
       setState((s) => ({
         ...s,
         entrada: data,
@@ -81,17 +96,12 @@ export function ConsultaProvider({ children }: { children: ReactNode }) {
         subjetivoAnswers: {},
         subjetivoFreeText: "",
         subjetivoSummary: null,
-        objetivoChecklist: null,
-        objetivoAnswers: {},
-        objetivoFreeText: "",
-        objetivoSummary: null,
+        objetivoChecklist: null, objetivoAnswers: {}, objetivoFreeText: "", objetivoSummary: null,
+        assessmentData: null, planData: null,
         currentStep: "subjetivo",
       }));
-    } catch (e: any) {
-      toast.error(e.message);
-    } finally {
-      setIsLoading(false);
-    }
+    } catch (e: any) { toast.error(e.message); }
+    finally { setIsLoading(false); }
   }, []);
 
   const updateAnswer = useCallback((itemId: string, partial: Partial<ChecklistAnswer>) => {
@@ -99,11 +109,7 @@ export function ConsultaProvider({ children }: { children: ReactNode }) {
       ...s,
       subjetivoAnswers: {
         ...s.subjetivoAnswers,
-        [itemId]: {
-          ...(s.subjetivoAnswers[itemId] || { itemId, checked: false }),
-          ...partial,
-          itemId,
-        },
+        [itemId]: { ...(s.subjetivoAnswers[itemId] || { itemId, checked: false }), ...partial, itemId },
       },
     }));
   }, []);
@@ -118,41 +124,29 @@ export function ConsultaProvider({ children }: { children: ReactNode }) {
       const answersWithQuestions = Object.values(state.subjetivoAnswers)
         .filter((a) => a.checked || a.value)
         .map((a) => {
-          const question = state.subjetivoChecklist
-            ?.flatMap((g) => g.items)
-            .find((i) => i.id === a.itemId)?.question;
+          const question = state.subjetivoChecklist?.flatMap((g) => g.items).find((i) => i.id === a.itemId)?.question;
           return { question, checked: a.checked, value: a.value };
         });
 
       const result: SubjectiveSummary = await callConsultaAI("generate-subjective-summary", {
-        sex: state.entrada?.sex,
-        age: state.entrada?.age,
-        chiefComplaint: state.entrada?.chiefComplaint,
-        duration: state.entrada?.duration,
-        answers: answersWithQuestions,
-        freeText: state.subjetivoFreeText,
+        sex: state.entrada?.sex, age: state.entrada?.age,
+        chiefComplaint: state.entrada?.chiefComplaint, duration: state.entrada?.duration,
+        answers: answersWithQuestions, freeText: state.subjetivoFreeText,
       });
 
       setState((s) => ({ ...s, subjetivoSummary: result }));
-    } catch (e: any) {
-      toast.error(e.message);
-    } finally {
-      setIsLoading(false);
-    }
+    } catch (e: any) { toast.error(e.message); }
+    finally { setIsLoading(false); }
   }, [state.subjetivoAnswers, state.subjetivoChecklist, state.subjetivoFreeText, state.entrada]);
 
-  // --- Objetivo ---
+  // ── Objetivo ──
 
   const updateObjetivoAnswer = useCallback((itemId: string, partial: Partial<ChecklistAnswer>) => {
     setState((s) => ({
       ...s,
       objetivoAnswers: {
         ...s.objetivoAnswers,
-        [itemId]: {
-          ...(s.objetivoAnswers[itemId] || { itemId, checked: false }),
-          ...partial,
-          itemId,
-        },
+        [itemId]: { ...(s.objetivoAnswers[itemId] || { itemId, checked: false }), ...partial, itemId },
       },
     }));
   }, []);
@@ -164,36 +158,23 @@ export function ConsultaProvider({ children }: { children: ReactNode }) {
   const generateObjetivoChecklist = useCallback(async () => {
     setIsLoading(true);
     try {
-      const subjectiveSummaryText = state.subjetivoSummary?.structured_summary
-        .map((s) => `${s.category}: ${s.content}`)
-        .join("\n") ?? "";
-
-      const result: { groups: ChecklistGroupData[] } = await callConsultaAI(
-        "generate-objective-checklist",
-        {
-          sex: state.entrada?.sex,
-          age: state.entrada?.age,
-          chiefComplaint: state.entrada?.chiefComplaint,
-          duration: state.entrada?.duration,
-          subjectiveSummary: subjectiveSummaryText,
-          redFlags: state.subjetivoSummary?.red_flags_found ?? [],
-        }
-      );
+      const result: { groups: ChecklistGroupData[] } = await callConsultaAI("generate-objective-checklist", {
+        sex: state.entrada?.sex, age: state.entrada?.age,
+        chiefComplaint: state.entrada?.chiefComplaint, duration: state.entrada?.duration,
+        subjectiveSummary: getSubjectiveSummaryText(),
+        redFlags: state.subjetivoSummary?.red_flags_found ?? [],
+      });
 
       setState((s) => ({
         ...s,
         objetivoChecklist: result.groups,
-        objetivoAnswers: {},
-        objetivoFreeText: "",
-        objetivoSummary: null,
+        objetivoAnswers: {}, objetivoFreeText: "", objetivoSummary: null,
+        assessmentData: null, planData: null,
         currentStep: "objetivo",
       }));
-    } catch (e: any) {
-      toast.error(e.message);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [state.entrada, state.subjetivoSummary]);
+    } catch (e: any) { toast.error(e.message); }
+    finally { setIsLoading(false); }
+  }, [state.entrada, state.subjetivoSummary, getSubjectiveSummaryText]);
 
   const submitObjetivo = useCallback(async () => {
     setIsLoading(true);
@@ -201,56 +182,75 @@ export function ConsultaProvider({ children }: { children: ReactNode }) {
       const answersWithQuestions = Object.values(state.objetivoAnswers)
         .filter((a) => a.checked || a.value)
         .map((a) => {
-          const question = state.objetivoChecklist
-            ?.flatMap((g) => g.items)
-            .find((i) => i.id === a.itemId)?.question;
+          const question = state.objetivoChecklist?.flatMap((g) => g.items).find((i) => i.id === a.itemId)?.question;
           return { question, checked: a.checked, value: a.value };
         });
 
-      const subjectiveSummaryText = state.subjetivoSummary?.structured_summary
-        .map((s) => `${s.category}: ${s.content}`)
-        .join("\n") ?? "";
-
       const result: ObjectiveSummary = await callConsultaAI("generate-objective-summary", {
-        sex: state.entrada?.sex,
-        age: state.entrada?.age,
+        sex: state.entrada?.sex, age: state.entrada?.age,
         chiefComplaint: state.entrada?.chiefComplaint,
-        subjectiveSummary: subjectiveSummaryText,
-        answers: answersWithQuestions,
-        freeText: state.objetivoFreeText,
+        subjectiveSummary: getSubjectiveSummaryText(),
+        answers: answersWithQuestions, freeText: state.objetivoFreeText,
       });
 
       setState((s) => ({ ...s, objetivoSummary: result }));
-    } catch (e: any) {
-      toast.error(e.message);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [state.objetivoAnswers, state.objetivoChecklist, state.objetivoFreeText, state.entrada, state.subjetivoSummary]);
+    } catch (e: any) { toast.error(e.message); }
+    finally { setIsLoading(false); }
+  }, [state.objetivoAnswers, state.objetivoChecklist, state.objetivoFreeText, state.entrada, state.subjetivoSummary, getSubjectiveSummaryText]);
+
+  // ── Avaliação ──
+
+  const generateAssessment = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const result: AssessmentData = await callConsultaAI("generate-assessment", {
+        sex: state.entrada?.sex, age: state.entrada?.age,
+        chiefComplaint: state.entrada?.chiefComplaint, duration: state.entrada?.duration,
+        subjectiveSummary: getSubjectiveSummaryText(),
+        subjectiveRedFlags: state.subjetivoSummary?.red_flags_found ?? [],
+        objectiveSummary: getObjectiveSummaryText(),
+        criticalFindings: state.objetivoSummary?.critical_findings ?? [],
+      });
+
+      setState((s) => ({ ...s, assessmentData: result, planData: null, currentStep: "avaliacao" }));
+    } catch (e: any) { toast.error(e.message); }
+    finally { setIsLoading(false); }
+  }, [state.entrada, state.subjetivoSummary, state.objetivoSummary, getSubjectiveSummaryText, getObjectiveSummaryText]);
+
+  // ── Plano ──
+
+  const generatePlan = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const result: PlanData = await callConsultaAI("generate-plan", {
+        sex: state.entrada?.sex, age: state.entrada?.age,
+        chiefComplaint: state.entrada?.chiefComplaint,
+        subjectiveSummary: getSubjectiveSummaryText(),
+        objectiveSummary: getObjectiveSummaryText(),
+        hypotheses: state.assessmentData?.hypotheses ?? [],
+        suggestedExams: state.assessmentData?.suggested_exams ?? [],
+        redFlagsAssessment: state.assessmentData?.red_flags_assessment ?? [],
+      });
+
+      setState((s) => ({ ...s, planData: result, currentStep: "plano" }));
+    } catch (e: any) { toast.error(e.message); }
+    finally { setIsLoading(false); }
+  }, [state.entrada, state.subjetivoSummary, state.objetivoSummary, state.assessmentData, getSubjectiveSummaryText, getObjectiveSummaryText]);
 
   const goToStep = useCallback((step: ConsultaStep) => {
     setState((s) => ({ ...s, currentStep: step }));
   }, []);
 
-  const reset = useCallback(() => {
-    setState(initialState);
-  }, []);
+  const reset = useCallback(() => { setState(initialState); }, []);
 
   return (
     <ConsultaContext.Provider
       value={{
-        state,
-        isLoading,
-        submitEntrada,
-        updateAnswer,
-        setSubjetivoFreeText,
-        submitSubjetivo,
-        updateObjetivoAnswer,
-        setObjetivoFreeText,
-        generateObjetivoChecklist,
-        submitObjetivo,
-        goToStep,
-        reset,
+        state, isLoading,
+        submitEntrada, updateAnswer, setSubjetivoFreeText, submitSubjetivo,
+        updateObjetivoAnswer, setObjetivoFreeText, generateObjetivoChecklist, submitObjetivo,
+        generateAssessment, generatePlan,
+        goToStep, reset,
       }}
     >
       {children}
