@@ -40,7 +40,7 @@ function GroupBlock({
       </div>
 
       {group.note && (
-        <p className="text-xs text-muted-foreground mb-2 italic">{group.note}</p>
+        <p className="text-xs mb-2 italic" style={{ color: "#545454" }}>{group.note}</p>
       )}
 
       <div className="space-y-2">
@@ -58,7 +58,7 @@ function GroupBlock({
               onCheckedChange={() => onToggle(item.id)}
               className="mt-0.5 border-[#E8720C] data-[state=checked]:bg-[#E8720C] data-[state=checked]:border-[#E8720C]"
             />
-            <span className="text-sm text-foreground flex-1">{item.label}</span>
+            <span className="text-sm flex-1" style={{ color: "#545454" }}>{item.label}</span>
             {hasPoints && item.points !== undefined && item.points > 0 && (
               <span className="text-xs font-bold text-[#E8720C] bg-[#E8720C]/10 px-1.5 py-0.5 rounded shrink-0">
                 {item.points} pts
