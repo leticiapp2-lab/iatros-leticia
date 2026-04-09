@@ -6,9 +6,9 @@ import mascot from "@/assets/mascot.png";
 
 const navButtons = [
   { label: "Chat Auxiliar", href: "/chat" },
-  { label: "Critérios Diagnósticos", href: "/biblioteca?tab=criterios" },
-  { label: "Calculadoras clínicas", href: "/biblioteca?tab=calculadoras" },
-  { label: "PDF editáveis", href: "/biblioteca?tab=pdf" },
+  { label: "Critérios Diagnósticos", href: "/criterios" },
+  { label: "Calculadoras clínicas", href: "/calculadoras" },
+  { label: "PDF editáveis", href: "/pdf" },
 ];
 
 export default function HomePage() {
