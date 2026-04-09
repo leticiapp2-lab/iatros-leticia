@@ -77,21 +77,23 @@ function ConsultaContent() {
         {/* Step indicator */}
         <StepIndicator currentStep={state.currentStep} onStepClick={goToStep} />
 
-        {/* Step content */}
-        <div className="mt-6">
-          {state.currentStep === "entrada" && <EntradaStep />}
-          {state.currentStep === "subjetivo" && <SubjetivoStep />}
-          {state.currentStep === "objetivo" && <ObjetivoStep />}
-          {state.currentStep === "avaliacao" && (
-            <div className="text-center py-16 text-muted-foreground">
-              <p className="text-lg">🧠 Etapa Avaliação — Em breve (Fase 3)</p>
-            </div>
-          )}
-          {state.currentStep === "plano" && (
-            <div className="text-center py-16 text-muted-foreground">
-              <p className="text-lg">📝 Etapa Plano — Em breve (Fase 3)</p>
-            </div>
-          )}
+        {/* Step content with transition */}
+        <div className="mt-6" key={state.currentStep}>
+          <div className="animate-fade-in">
+            {state.currentStep === "entrada" && <EntradaStep />}
+            {state.currentStep === "subjetivo" && <SubjetivoStep />}
+            {state.currentStep === "objetivo" && <ObjetivoStep />}
+            {state.currentStep === "avaliacao" && (
+              <div className="text-center py-16 text-muted-foreground">
+                <p className="text-lg">🧠 Etapa Avaliação — Em breve (Fase 3)</p>
+              </div>
+            )}
+            {state.currentStep === "plano" && (
+              <div className="text-center py-16 text-muted-foreground">
+                <p className="text-lg">📝 Etapa Plano — Em breve (Fase 3)</p>
+              </div>
+            )}
+          </div>
         </div>
       </main>
     </div>
