@@ -23,8 +23,8 @@ export default function HomePage() {
   return (
     <div className="min-h-screen flex flex-col bg-background" style={{ fontFamily: "'Francois One', sans-serif" }}>
       {/* Header with logo */}
-      <header className="w-full bg-gradient-to-r from-[#7B2FBE] via-[#9B30FF] to-[#7B2FBE] flex items-center justify-center py-3 px-4">
-        <img src={logoIatros} alt="IATROS" className="h-12 sm:h-16 object-contain" />
+      <header className="w-full bg-gradient-to-r from-[#7B2FBE] via-[#9B30FF] to-[#7B2FBE] flex items-center justify-center py-5 px-6">
+        <img src={logoIatros} alt="IATROS" className="h-16 sm:h-20 md:h-24 object-contain" />
       </header>
 
       {/* Navigation bar */}
