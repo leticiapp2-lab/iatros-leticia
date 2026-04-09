@@ -21,12 +21,19 @@ export interface EvaluationResult {
   maxScore?: number;
 }
 
+export interface DiseaseImage {
+  src: string;
+  alt: string;
+  legend?: string[];
+}
+
 export interface InteractiveDisease {
   id: string;
   name: string;
   shortName: string;
   criteriaSetName: string;
   groups: CriteriaGroup[];
+  image?: DiseaseImage;
   evaluate: (checked: Set<string>) => EvaluationResult;
 }
 

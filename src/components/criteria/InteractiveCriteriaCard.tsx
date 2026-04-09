@@ -5,6 +5,7 @@ import type {
   InteractiveDisease,
   CriteriaGroup,
   EvaluationResult,
+  DiseaseImage,
 } from "@/data/interactiveCriteria";
 
 function GroupBlock({
@@ -177,6 +178,24 @@ export default function InteractiveCriteriaCard({
 
       {!collapsed && (
         <div className="p-4 sm:p-6 space-y-2" style={{ fontFamily: "'Lato', sans-serif", color: "#545454" }}>
+          {/* Image + Legend */}
+          {disease.image && (
+            <div className="mb-4 flex flex-col items-center">
+              <img
+                src={disease.image.src}
+                alt={disease.image.alt}
+                className="max-w-full max-h-[400px] object-contain rounded-lg"
+              />
+              {disease.image.legend && (
+                <div className="mt-3 grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-1 text-xs" style={{ color: "#545454" }}>
+                  {disease.image.legend.map((item, idx) => (
+                    <span key={idx} className="font-medium">{item}</span>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Groups */}
           {disease.groups.map((group) => (
             <GroupBlock
