@@ -1,4 +1,4 @@
-import { Loader2, ArrowLeft, FileText } from "lucide-react";
+import { Loader2, ArrowLeft, ArrowRight, FileText } from "lucide-react";
 import { useConsulta } from "./ConsultaProvider";
 import ChecklistGroup from "./ChecklistGroup";
 import ObjetivoResumoBlock from "./ObjetivoResumoBlock";
@@ -10,6 +10,7 @@ export default function ObjetivoStep() {
     updateObjetivoAnswer,
     setObjetivoFreeText,
     submitObjetivo,
+    generateAssessment,
     goToStep,
   } = useConsulta();
 
@@ -88,13 +89,24 @@ export default function ObjetivoStep() {
       {/* Summary */}
       {objetivoSummary && <ObjetivoResumoBlock summary={objetivoSummary} />}
 
-      {/* Next step placeholder */}
+      {/* Advance to Avaliação */}
       {objetivoSummary && (
         <button
-          disabled
-          className="w-full flex items-center justify-center gap-2 bg-muted text-muted-foreground font-semibold py-4 rounded-xl text-base transition-colors cursor-not-allowed"
+          onClick={() => generateAssessment()}
+          disabled={isLoading}
+          className="w-full flex items-center justify-center gap-2 bg-[#7B2FBE] hover:bg-[#6A28A6] text-white font-semibold py-4 rounded-xl text-base sm:text-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
         >
-          Avaliação — Em breve (Fase 3)
+          {isLoading ? (
+            <>
+              <Loader2 className="h-5 w-5 animate-spin" />
+              Gerando avaliação clínica...
+            </>
+          ) : (
+            <>
+              Avançar para Avaliação
+              <ArrowRight className="h-5 w-5" />
+            </>
+          )}
         </button>
       )}
     </div>

@@ -35,12 +35,10 @@ export interface SubjectiveSummary {
 
 export interface EntradaData {
   consultationType: ConsultationType;
-  // Primeira consulta
   sex?: string;
   age?: string;
   chiefComplaint?: string;
   duration?: string;
-  // Retorno
   previousSoap?: string;
   returnUpdate?: string;
   newComplaint?: string;
@@ -55,6 +53,72 @@ export interface ObjectiveSummary {
   critical_findings: string[];
 }
 
+// ── Avaliação ──
+
+export interface DiagnosticHypothesis {
+  rank: number;
+  diagnosis: string;
+  probability: "alta" | "moderada" | "baixa";
+  reasoning: string;
+  criteria?: string;
+  key_findings_for?: string[];
+  key_findings_against?: string[];
+}
+
+export interface SuggestedExam {
+  exam: string;
+  justification: string;
+  priority: "urgente" | "importante" | "complementar";
+}
+
+export interface ClinicalCalculator {
+  name: string;
+  purpose: string;
+  relevance?: string;
+}
+
+export interface AssessmentData {
+  hypotheses: DiagnosticHypothesis[];
+  suggested_exams: SuggestedExam[];
+  calculators?: ClinicalCalculator[];
+  differential_summary: string;
+  red_flags_assessment?: string[];
+}
+
+// ── Plano ──
+
+export interface PlanExam {
+  exam: string;
+  justification?: string;
+}
+
+export interface TherapeuticMeasure {
+  measure: string;
+  details: string;
+  type: "medicamentosa" | "nao_medicamentosa" | "procedimento";
+}
+
+export interface Referral {
+  specialty: string;
+  reason: string;
+  urgency: "urgente" | "prioritario" | "eletivo";
+}
+
+export interface FollowUp {
+  return_interval: string;
+  criteria_return_earlier?: string[];
+  monitoring_parameters?: string[];
+}
+
+export interface PlanData {
+  exams_to_request?: PlanExam[];
+  therapeutic_measures: TherapeuticMeasure[];
+  patient_orientations: string[];
+  follow_up: FollowUp;
+  referrals?: Referral[];
+  prontuario_paragraph: string;
+}
+
 export interface ConsultaState {
   currentStep: ConsultaStep;
   entrada: EntradaData | null;
@@ -66,4 +130,6 @@ export interface ConsultaState {
   objetivoAnswers: Record<string, ChecklistAnswer>;
   objetivoFreeText: string;
   objetivoSummary: ObjectiveSummary | null;
+  assessmentData: AssessmentData | null;
+  planData: PlanData | null;
 }
