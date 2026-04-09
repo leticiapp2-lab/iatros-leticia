@@ -3,6 +3,7 @@ export type {
   CriteriaGroup,
   EvaluationResult,
   InteractiveDisease,
+  DiseaseImage,
 } from "./criteria/types";
 export { countInGroup, sumPointsInGroup } from "./criteria/types";
 
