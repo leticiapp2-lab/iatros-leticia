@@ -5,6 +5,7 @@ import type {
   InteractiveDisease,
   CriteriaGroup,
   EvaluationResult,
+  DiseaseImage,
 } from "@/data/interactiveCriteria";
 
 function GroupBlock({
