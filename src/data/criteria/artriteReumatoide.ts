@@ -1,10 +1,22 @@
 import { InteractiveDisease, sumPointsInGroup } from "./types";
+import arMaosImg from "@/assets/artrite-reumatoide-maos.png";
 
 export const artriteReumatoide: InteractiveDisease = {
   id: "artrite-reumatoide",
   name: "Artrite Reumatoide",
   shortName: "Artrite Reumatoide",
   criteriaSetName: "ACR/EULAR 2010 — Sensibilidade 82% / Especificidade 61%",
+  image: {
+    src: arMaosImg,
+    alt: "Articulações das mãos avaliadas na Artrite Reumatoide — 22 articulações",
+    legend: [
+      "IFD — Interfalangeanas distais (NÃO incluídas)",
+      "IFP — Interfalangeanas proximais (10 articulações)",
+      "MCF — Metacarpofalangeanas (10 articulações)",
+      "Punho — 2 articulações (1 cada lado)",
+      "Total: 22 articulações nas mãos",
+    ],
+  },
   groups: [
     {
       id: "ar-entrada",
