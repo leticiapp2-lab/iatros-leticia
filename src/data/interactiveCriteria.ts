@@ -392,6 +392,17 @@ const fibromialgia: InteractiveDisease = {
   image: {
     src: fibromalgiaBodyMap,
     alt: "Mapa corporal dos 9 sítios de dor para fibromialgia",
+    legend: [
+      "1 — Cabeça",
+      "2 — Braço esquerdo",
+      "3 — Braço direito",
+      "4 — Costas superior",
+      "5 — Costas inferior",
+      "6 — Peitoral",
+      "7 — Abdômen",
+      "8 — Perna direita",
+      "9 — Perna esquerda",
+    ],
   },
   groups: [
     {
