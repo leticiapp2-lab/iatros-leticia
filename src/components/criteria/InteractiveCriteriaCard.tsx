@@ -176,7 +176,7 @@ export default function InteractiveCriteriaCard({
       </div>
 
       {!collapsed && (
-        <div className="p-4 sm:p-6 space-y-2" style={{ fontFamily: "'Inter', sans-serif" }}>
+        <div className="p-4 sm:p-6 space-y-2" style={{ fontFamily: "'Lato', sans-serif", color: "#545454" }}>
           {/* Groups */}
           {disease.groups.map((group) => (
             <GroupBlock
