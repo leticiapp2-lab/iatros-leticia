@@ -17,11 +17,13 @@ export const has: InteractiveDisease = {
     },
     {
       id: "has-fora",
-      title: "Via Fora do Consultório (qualquer 1)",
-      note: "MAPA ou MRPA para confirmação",
+      title: "Confirmação Fora do Consultório (qualquer 1)",
+      note: "MAPA ou MRPA — essenciais para descartar hipertensão do avental branco ou diagnosticar hipertensão mascarada",
       items: [
-        { id: "has-f1", label: "MAPA: média 24h ≥130/80 mmHg" },
-        { id: "has-f2", label: "MRPA: média ≥130/80 mmHg" },
+        { id: "has-f1", label: "MAPA: média 24h ≥ 130/80 mmHg" },
+        { id: "has-f2", label: "MAPA: vigília (acordado) ≥ 135/85 mmHg" },
+        { id: "has-f3", label: "MAPA: sono ≥ 120/70 mmHg" },
+        { id: "has-f4", label: "MRPA: média ≥ 130/80 mmHg" },
       ],
     },
   ],
