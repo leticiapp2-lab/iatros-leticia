@@ -29,7 +29,7 @@ function GroupBlock({
     <div className="mb-4">
       <div className="flex items-center justify-between mb-1.5">
         <h4
-          className="font-semibold text-base"
+          className="font-semibold text-lg"
           style={{ fontFamily: "'Francois One', sans-serif", color: "#4A2800" }}
         >
           {group.title}
