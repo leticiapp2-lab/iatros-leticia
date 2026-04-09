@@ -41,7 +41,7 @@ export default function CriteriosPage() {
           </h2>
 
           {/* Mobile horizontal scroll */}
-          <div className="flex lg:hidden gap-2 overflow-x-auto pb-2 -mx-4 px-4">
+          <div className="flex lg:hidden gap-2 overflow-x-auto pb-2 -mx-4 px-4" style={{ fontFamily: "'Lato', sans-serif" }}>
             {interactiveDiseases.map((d, i) => (
               <button
                 key={d.id}
@@ -49,8 +49,9 @@ export default function CriteriosPage() {
                 className={`shrink-0 px-3 py-2 rounded-lg text-sm font-medium border-2 transition-colors ${
                   i === activeIndex
                     ? "bg-[#E8720C] text-white border-[#D4841A]"
-                    : "bg-[#FFF5EB] text-foreground border-[#E8720C]/30 hover:border-[#E8720C]"
+                    : "bg-[#FFF5EB] border-[#E8720C]/30 hover:border-[#E8720C]"
                 }`}
+                style={{ color: i === activeIndex ? undefined : "#545454" }}
               >
                 {d.shortName}
               </button>
@@ -58,7 +59,7 @@ export default function CriteriosPage() {
           </div>
 
           {/* Desktop vertical list */}
-          <div className="hidden lg:flex flex-col gap-1">
+          <div className="hidden lg:flex flex-col gap-1" style={{ fontFamily: "'Lato', sans-serif" }}>
             {interactiveDiseases.map((d, i) => (
               <button
                 key={d.id}
@@ -66,8 +67,9 @@ export default function CriteriosPage() {
                 className={`text-left px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                   i === activeIndex
                     ? "bg-[#E8720C] text-white"
-                    : "text-foreground hover:bg-[#FFF5EB]"
+                    : "hover:bg-[#FFF5EB]"
                 }`}
+                style={{ color: i === activeIndex ? undefined : "#545454" }}
               >
                 {d.shortName}
               </button>
@@ -80,7 +82,7 @@ export default function CriteriosPage() {
           <InteractiveCriteriaCard key={active.id} disease={active} />
 
           {/* Prev / Next */}
-          <div className="flex items-center justify-between mt-4">
+          <div className="flex items-center justify-between mt-4" style={{ fontFamily: "'Lato', sans-serif", color: "#545454" }}>
             <button
               onClick={() => setActiveIndex(Math.max(0, activeIndex - 1))}
               disabled={activeIndex === 0}
@@ -89,7 +91,7 @@ export default function CriteriosPage() {
               <ChevronLeft className="h-4 w-4" />
               Anterior
             </button>
-            <span className="text-xs text-muted-foreground">
+            <span className="text-xs" style={{ color: "#545454" }}>
               {activeIndex + 1} / {interactiveDiseases.length}
             </span>
             <button
