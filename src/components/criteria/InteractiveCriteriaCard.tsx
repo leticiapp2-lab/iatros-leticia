@@ -194,6 +194,32 @@ export default function InteractiveCriteriaCard({
                   ))}
                 </div>
               )}
+              {disease.image.interactiveLegend && (
+                <div className="mt-3 w-full">
+                  <p className="text-xs font-bold mb-2" style={{ color: "#4A2800", fontFamily: "'Francois One', sans-serif" }}>
+                    Sítios de dor ({disease.image.interactiveLegend.filter(l => checked.has(l.id)).length}/{disease.image.interactiveLegend.length} marcados)
+                  </p>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    {disease.image.interactiveLegend.map((item) => (
+                      <label
+                        key={item.id}
+                        className={`flex items-center gap-2 p-2 rounded-lg border-2 cursor-pointer transition-all text-xs font-medium ${
+                          checked.has(item.id)
+                            ? "border-[#E8720C] bg-[#E8720C]/10"
+                            : "border-transparent bg-white/60 hover:bg-white/80"
+                        }`}
+                      >
+                        <Checkbox
+                          checked={checked.has(item.id)}
+                          onCheckedChange={() => toggle(item.id)}
+                          className="border-[#E8720C] data-[state=checked]:bg-[#E8720C] data-[state=checked]:border-[#E8720C]"
+                        />
+                        <span style={{ color: "#545454" }}>{item.label}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
