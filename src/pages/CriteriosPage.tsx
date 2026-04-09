@@ -36,7 +36,7 @@ export default function CriteriosPage() {
       <div className="flex-1 flex flex-col lg:flex-row max-w-6xl mx-auto w-full px-4 py-6 gap-4">
         {/* Sidebar */}
         <aside className="lg:w-64 shrink-0">
-          <h2 className="text-lg font-bold mb-3" style={{ color: "#4A2800" }}>
+          <h2 className="text-lg font-bold mb-3" style={{ fontFamily: "'Francois One', sans-serif", color: "#4A2800" }}>
             Critérios Diagnósticos
           </h2>
 
