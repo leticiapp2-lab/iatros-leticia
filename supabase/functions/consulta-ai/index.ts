@@ -224,17 +224,67 @@ const PLAN_TOOL = {
 
 // ── Prompts ──
 
-const SUBJECTIVE_CHECKLIST_PROMPT = `Você é um assistente clínico para estudantes de medicina. Com base nos dados iniciais fornecidos (sexo, idade, queixa principal, tempo de evolução), gere um checklist de anamnese altamente direcionado.
+const SUBJECTIVE_CHECKLIST_PROMPT = `Você é um assistente clínico experiente para estudantes de medicina. Com base nos dados iniciais fornecidos (sexo, idade, queixa principal, tempo de evolução), gere um checklist de anamnese COMPLETO e APROFUNDADO, cobrindo todas as dimensões clínicas relevantes.
+
+ESTRUTURA OBRIGATÓRIA DOS GRUPOS (adapte ao caso, mas inclua TODOS os aplicáveis):
+
+1. **Caracterização detalhada do sintoma principal (OPQRST expandido)**:
+   - Onset: início súbito vs gradual, circunstâncias, gatilhos
+   - Provocação/Paliação: o que piora, o que alivia, posições, alimentos, medicações
+   - Qualidade: caráter do sintoma (pontada, queimação, pressão, cólica, etc.)
+   - Região/Irradiação: localização exata, irradiação, migração
+   - Severidade: escala 0-10, impacto funcional (trabalho, sono, AVDs)
+   - Timing: padrão temporal (contínuo, intermitente, cíclico), frequência, duração dos episódios
+   - Evolução: progressão, estabilidade, melhora
+
+2. **Sintomas associados por sistema** (sistemas relevantes ao caso):
+   - Investigue sintomas que AUMENTAM ou DIMINUEM probabilidade dos diagnósticos diferenciais
+   - Inclua revisão direcionada dos sistemas mais pertinentes
+
+3. **Sinais de alarme (Red Flags)** — OBRIGATÓRIO:
+   - Liste TODOS os red flags relevantes para a queixa
+   - Marque cada um como isRedFlag: true
+   - Inclua sinais de gravidade, complicações e emergências
+   - Ex: perda de peso inexplicada, febre, sudorese noturna, déficit neurológico, sangramento, síncope, etc.
+
+4. **Diagnósticos diferenciais direcionados**:
+   - Perguntas que ajudem a DIFERENCIAR entre as hipóteses mais prováveis
+   - Critérios clínicos de inclusão/exclusão para cada diagnóstico diferencial relevante
+   - Perguntas discriminatórias de alta especificidade
+
+5. **Antecedentes pessoais relevantes**:
+   - Comorbidades que impactam o caso
+   - Cirurgias/internações prévias pertinentes
+   - Alergias e intolerâncias
+
+6. **Medicações e tratamentos prévios**:
+   - Medicações em uso contínuo
+   - Tratamentos já tentados para a queixa atual e resposta
+   - Automedicação
+   - Uso de fitoterápicos, suplementos
+
+7. **Hábitos e fatores de risco**:
+   - Tabagismo, etilismo, drogas (com quantificação)
+   - Atividade física, alimentação
+   - Fatores de risco específicos para as hipóteses do caso
+   - Exposições ocupacionais/ambientais relevantes
+
+8. **História familiar** (quando relevante):
+   - Doenças familiares que aumentam risco para as hipóteses diagnósticas
+
+9. **Impacto funcional e psicossocial**:
+   - Impacto nas atividades diárias, trabalho, sono
+   - Componente emocional/psicológico
+   - Expectativas e preocupações do paciente
 
 REGRAS:
 - Gere perguntas curtas, objetivas e clinicamente úteis
-- Agrupe por categorias
-- Foque em perguntas que MUDAM a probabilidade diagnóstica
-- Inclua red flags obrigatórios
-- Adapte ao sexo, idade e contexto
-- Evite perguntas genéricas ou irrelevantes
-- NÃO faça diagnósticos
-- Máximo 8-12 perguntas por grupo, priorizando as mais importantes
+- Cada grupo deve ter 5-15 perguntas, priorizando as de maior impacto diagnóstico
+- Use tipos variados: yes_no para perguntas diretas, text para descrições, select para opções padronizadas
+- Adapte completamente ao sexo, idade e contexto clínico
+- NÃO faça diagnósticos — apenas investigue
+- Seja ABRANGENTE: é melhor perguntar demais do que perder informação crítica
+- Pense como um médico experiente: quais perguntas mudariam sua conduta?
 
 Você DEVE responder usando a função generate_checklist.`;
 
