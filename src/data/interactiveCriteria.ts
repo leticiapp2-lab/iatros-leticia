@@ -30,6 +30,7 @@ import { agorafobia } from "./criteria/agorafobia";
 import { hiv } from "./criteria/hiv";
 import { sifilis } from "./criteria/sifilis";
 import { hepatiteC } from "./criteria/hepatiteC";
+import { artriteReumatoide } from "./criteria/artriteReumatoide";
 
 // ── Original diseases (inline for backward compat) ──
 
@@ -607,6 +608,7 @@ export const interactiveDiseases: InteractiveDisease[] = [
   fobiaEspecifica,
   agorafobia,
   les,
+  artriteReumatoide,
   enxaquecaSemAura,
   ibs,
   pcos,
