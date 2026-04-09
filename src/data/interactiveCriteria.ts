@@ -25,6 +25,9 @@ import { toc } from "./criteria/toc";
 import { tag } from "./criteria/tag";
 import { fobiaEspecifica } from "./criteria/fobiaEspecifica";
 import { agorafobia } from "./criteria/agorafobia";
+import { hiv } from "./criteria/hiv";
+import { sifilis } from "./criteria/sifilis";
+import { hepatiteC } from "./criteria/hepatiteC";
 
 // ── Original diseases (inline for backward compat) ──
 
