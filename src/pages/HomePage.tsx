@@ -6,6 +6,7 @@ import mascot from "@/assets/mascot.png";
 
 const navButtons = [
   { label: "Chat Auxiliar", href: "/chat" },
+  { label: "Consulta Guiada", href: "/consulta" },
   { label: "Critérios Diagnósticos", href: "/criterios" },
   { label: "Fluxograma Diagnóstico", href: "/fluxogramas" },
   { label: "Calculadoras clínicas", href: "/calculadoras" },

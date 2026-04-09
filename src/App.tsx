@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import HomePage from "./pages/HomePage";
 import ChatPage from "./pages/ChatPage";
+import ConsultaPage from "./pages/ConsultaPage";
 import CriteriosPage from "./pages/CriteriosPage";
 import FluxogramasPage from "./pages/FluxogramasPage";
 import NotFound from "./pages/NotFound";
@@ -20,6 +21,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/chat" element={<ChatPage />} />
+          <Route path="/consulta" element={<ConsultaPage />} />
           <Route path="/criterios" element={<CriteriosPage />} />
           <Route path="/fluxogramas" element={<FluxogramasPage />} />
           <Route path="*" element={<NotFound />} />
