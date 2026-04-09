@@ -13,6 +13,8 @@ import { drc } from "./criteria/drc";
 import { hipotireoidismo } from "./criteria/hipotireoidismo";
 import { hipertireoidismo } from "./criteria/hipertireoidismo";
 import { osteoporose } from "./criteria/osteoporose";
+import { tuberculose } from "./criteria/tuberculose";
+import { hanseniase } from "./criteria/hanseniase";
 
 // ── Original diseases (inline for backward compat) ──
 
@@ -517,4 +519,6 @@ export const interactiveDiseases: InteractiveDisease[] = [
   hipotireoidismo,
   hipertireoidismo,
   osteoporose,
+  tuberculose,
+  hanseniase,
 ];

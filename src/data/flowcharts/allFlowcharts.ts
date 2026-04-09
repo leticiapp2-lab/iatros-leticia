@@ -532,6 +532,97 @@ const osteoporose: DiseaseFlowchart = {
     style OPJB fill:#f59e0b,color:#000`,
 };
 
+/* ════════════════════════════════════════════════════
+   16. TUBERCULOSE
+   ════════════════════════════════════════════════════ */
+const tuberculoseFlow: DiseaseFlowchart = {
+  diseaseId: "tuberculose",
+  name: "Tuberculose",
+  shortName: "Tuberculose",
+  startId: "tb1",
+  steps: [
+    { id: "tb1", type: "question", text: "O paciente tem ≥10 anos (adulto/adolescente)?", yesNext: "tb2", noNext: "tb-ped1" },
+    { id: "tb2", type: "question", text: "É sintomático respiratório?\n(tosse ≥3 semanas na pop. geral OU qualquer tosse em vulneráveis: HIV, privação de liberdade, rua, contato TB)", yesNext: "tb3", noNext: "tb-outros" },
+    { id: "tb-outros", type: "question", text: "Há outros sintomas sugestivos?\n(febre vespertina, sudorese noturna, emagrecimento, fadiga)", yesNext: "tb3", noNext: "tb-no" },
+    { id: "tb3", type: "question", text: "TRM-TB realizado — resultado?", yesNext: "tb-trm-pos", noNext: "tb4" },
+    { id: "tb-trm-pos", type: "conclusion", text: "TB confirmada por TRM-TB.", isPositive: true, detail: "Verificar se há resistência à rifampicina. Iniciar tratamento." },
+    { id: "tb4", type: "question", text: "Baciloscopia (BAAR) ou cultura positiva?", yesNext: "tb-lab-pos", noNext: "tb5" },
+    { id: "tb-lab-pos", type: "conclusion", text: "TB confirmada laboratorialmente.", isPositive: true, detail: "Se cultura: aguardar teste de sensibilidade." },
+    { id: "tb5", type: "question", text: "RX de tórax com achados sugestivos?\n(cavidades, nódulos, consolidações)", yesNext: "tb-susp", noNext: "tb-no" },
+    { id: "tb-susp", type: "conclusion", text: "Suspeita clínico-radiológica de TB.", isPositive: false, detail: "Solicitar TRM-TB (prioritário), baciloscopia e cultura. Não retardar tratamento se alta suspeição." },
+    { id: "tb-no", type: "conclusion", text: "Sem critérios atuais para TB.", isPositive: false, detail: "Monitorar e reavaliar se surgirem sintomas." },
+    // Pediatria
+    { id: "tb-ped1", type: "question", text: "Criança <10 anos — Escore clínico-epidemiológico:\nHá febre/tosse/emagrecimento por ≥2 semanas? (+15 pts)", yesNext: "tb-ped2", noNext: "tb-ped2" },
+    { id: "tb-ped2", type: "question", text: "RX com adenomegalia hilar, padrão miliar ou condensação inalterada/pior após ATB? (+15 pts)", yesNext: "tb-ped3", noNext: "tb-ped3" },
+    { id: "tb-ped3", type: "question", text: "Contato próximo com adulto com TB nos últimos 2 anos? (+10 pts)", yesNext: "tb-ped4", noNext: "tb-ped4" },
+    { id: "tb-ped4", type: "question", text: "PT ≥10mm ou IGRA positivo? (+10 pts)\nOu PT 5-9mm? (+5 pts)", yesNext: "tb-ped5", noNext: "tb-ped5" },
+    { id: "tb-ped5", type: "question", text: "Desnutrição grave? (+5 pts)\n\nSome os pontos:\n≥40 = muito provável\n30-35 = possível\n≤25 = pouco provável", yesNext: "tb-ped-eval", noNext: "tb-ped-eval" },
+    { id: "tb-ped-eval", type: "conclusion", text: "Avalie a pontuação total do escore pediátrico.", isPositive: false, detail: "≥40 pts: iniciar tratamento.\n30-35 pts: tratar a critério médico.\n≤25 pts: continuar investigação." },
+  ],
+  mermaid: `graph TD
+    TB1["Idade >= 10 anos?"]
+    TB1 -->|Sim| TB2["Sintomatico respiratorio?\\n(tosse >= 3sem ou qualquer\\nem vulneraveis)"]
+    TB1 -->|Nao| PED["Escore Pediatrico\\n< 10 anos"]
+    TB2 -->|Sim| TB3["TRM-TB positivo?"]
+    TB2 -->|Nao| TBO["Outros sintomas?\\n(febre, sudorese,\\nemagrecimento)"]
+    TBO -->|Sim| TB3
+    TBO -->|Nao| TBN["Sem criterios para TB"]
+    TB3 -->|Sim| TBY1["TB confirmada\\npor TRM-TB"]
+    TB3 -->|Nao| TB4["BAAR ou cultura\\npositiva?"]
+    TB4 -->|Sim| TBY2["TB confirmada\\nlaboratorialmente"]
+    TB4 -->|Nao| TB5["RX sugestivo?"]
+    TB5 -->|Sim| TBS["Suspeita clinico-\\nradiologica"]
+    TB5 -->|Nao| TBN
+    PED --> PED1["Sintomas >= 2sem: 15pts\\nRX alterado: 15pts\\nContato TB: 10pts\\nPT/IGRA: 5-10pts\\nDesnutricao: 5pts"]
+    PED1 --> PEDE[">=40: muito provavel\\n30-35: possivel\\n<=25: pouco provavel"]
+    style TBY1 fill:#22c55e,color:#fff
+    style TBY2 fill:#22c55e,color:#fff
+    style TBS fill:#f59e0b,color:#000
+    style TBN fill:#ef4444,color:#fff
+    style PEDE fill:#f59e0b,color:#000`,
+};
+
+/* ════════════════════════════════════════════════════
+   17. HANSENÍASE
+   ════════════════════════════════════════════════════ */
+const hanseniaseFlow: DiseaseFlowchart = {
+  diseaseId: "hanseniase",
+  name: "Hanseníase",
+  shortName: "Hanseníase",
+  startId: "hn1",
+  steps: [
+    { id: "hn1", type: "question", text: "Há lesão(ões) de pele com alteração de sensibilidade?\n(térmica, dolorosa e/ou tátil)", yesNext: "hn-yes1", noNext: "hn2" },
+    { id: "hn2", type: "question", text: "Há espessamento de nervo periférico com alterações sensitivas, motoras ou autonômicas?", yesNext: "hn-yes2", noNext: "hn3" },
+    { id: "hn3", type: "question", text: "Baciloscopia ou biópsia de pele confirma M. leprae?", yesNext: "hn-yes3", noNext: "hn4" },
+    { id: "hn4", type: "question", text: "Há achados sugestivos no exame?\n(manchas hipocrômicas/eritematosas, placas, nódulos, nervos espessados)", yesNext: "hn-susp", noNext: "hn-no" },
+    { id: "hn-yes1", type: "question", text: "Diagnóstico confirmado! Quantas lesões cutâneas?\n(≤5 = PB / >5 ou bac+ = MB)", yesNext: "hn-mb", noNext: "hn-pb" },
+    { id: "hn-pb", type: "conclusion", text: "Hanseníase Paucibacilar (PB) — até 5 lesões.", isPositive: true, detail: "Iniciar PQT-PB (6 meses)." },
+    { id: "hn-mb", type: "conclusion", text: "Hanseníase Multibacilar (MB) — >5 lesões ou bac+.", isPositive: true, detail: "Iniciar PQT-MB (12 meses)." },
+    { id: "hn-yes2", type: "conclusion", text: "Hanseníase diagnosticada — espessamento neural com alterações.", isPositive: true, detail: "Classificar PB/MB e iniciar PQT. Realizar ANS completa." },
+    { id: "hn-yes3", type: "conclusion", text: "Hanseníase confirmada laboratorialmente (Multibacilar).", isPositive: true, detail: "Baciloscopia positiva = MB. Iniciar PQT-MB." },
+    { id: "hn-susp", type: "conclusion", text: "Achados sugestivos — complementar investigação.", isPositive: false, detail: "Realizar testes de sensibilidade nas lesões, ANS e considerar biópsia/baciloscopia." },
+    { id: "hn-no", type: "conclusion", text: "Sem critérios para hanseníase.", isPositive: false, detail: "Diagnóstico exige ≥1 sinal cardinal." },
+  ],
+  mermaid: `graph TD
+    HN1["Lesao de pele com\\nalteracao de sensibilidade?"]
+    HN1 -->|Sim| HNY1["Diagnostico confirmado!\\nQuantas lesoes?"]
+    HN1 -->|Nao| HN2["Espessamento neural +\\nalteracoes sensitivas/motoras?"]
+    HNY1 -->|"<= 5"| HNPB["Paucibacilar PB\\nPQT 6 meses"]
+    HNY1 -->|"> 5 ou bac+"| HNMB["Multibacilar MB\\nPQT 12 meses"]
+    HN2 -->|Sim| HNY2["Hanseniase confirmada\\nClassificar PB/MB"]
+    HN2 -->|Nao| HN3["Baciloscopia ou biopsia\\nconfirma M. leprae?"]
+    HN3 -->|Sim| HNY3["Hanseniase MB\\nconfirmada"]
+    HN3 -->|Nao| HN4["Achados sugestivos?\\n(manchas, placas, nervos)"]
+    HN4 -->|Sim| HNS["Investigar: testes de\\nsensibilidade + ANS + biopsia"]
+    HN4 -->|Nao| HNN["Sem criterios"]
+    style HNPB fill:#22c55e,color:#fff
+    style HNMB fill:#22c55e,color:#fff
+    style HNY2 fill:#22c55e,color:#fff
+    style HNY3 fill:#22c55e,color:#fff
+    style HNS fill:#f59e0b,color:#000
+    style HNN fill:#ef4444,color:#fff`,
+};
+
 export const allFlowcharts: DiseaseFlowchart[] = [
   depressao,
   tag,
@@ -548,4 +639,6 @@ export const allFlowcharts: DiseaseFlowchart[] = [
   hipotireoidismo,
   hipertireoidismo,
   osteoporose,
+  tuberculoseFlow,
+  hanseniaseFlow,
 ];
