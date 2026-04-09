@@ -44,18 +44,18 @@ export default function HomePage() {
       </nav>
 
       {/* Main content */}
-      <main className="flex-1 flex items-start justify-center px-4 py-8 sm:py-12">
-        <div className="max-w-4xl w-full flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-10">
+      <main className="flex-1 flex items-start justify-center px-6 py-10 sm:py-16">
+        <div className="max-w-6xl w-full flex flex-col md:flex-row items-center md:items-start gap-8 md:gap-14">
           {/* Mascot */}
-          <div className="shrink-0 w-48 sm:w-56 md:w-64">
+          <div className="shrink-0 w-56 sm:w-64 md:w-80">
             <img src={mascot} alt="Iatros - Auxiliar Clínico" className="w-full h-auto" />
           </div>
 
           {/* Speech bubble + chat area */}
           <div className="flex-1 w-full">
             {/* Speech bubble */}
-            <div className="mb-6">
-              <p className="text-foreground text-base sm:text-lg leading-relaxed" style={{ fontFamily: "'Francois One', sans-serif" }}>
+            <div className="mb-8">
+              <p className="text-foreground text-lg sm:text-xl leading-relaxed" style={{ fontFamily: "'Francois One', sans-serif" }}>
                 "Olá, meu nome é Iatros e serei seu Auxiliar Clínico! Podemos
                 nos falar pelo Chat ou posso te auxiliar a encontrar as Abas
                 Teóricas do site."
@@ -63,28 +63,28 @@ export default function HomePage() {
             </div>
 
             {/* Chat input area */}
-            <div className="border-2 border-[#E8720C] rounded-xl bg-[#FFF5EB] p-3 sm:p-4 shadow-sm">
+            <div className="border-2 border-[#E8720C] rounded-xl bg-[#FFF5EB] p-4 sm:p-6 shadow-sm">
               {/* Message display area */}
-              <div className="min-h-[180px] sm:min-h-[220px] mb-3 rounded-lg bg-card p-3">
+              <div className="min-h-[240px] sm:min-h-[300px] mb-4 rounded-lg bg-card p-4">
                 {/* Empty chat area */}
               </div>
 
               {/* Input bar */}
-              <div className="flex items-center gap-2 border border-[#E8720C]/40 rounded-lg bg-card px-3 py-2">
+              <div className="flex items-center gap-3 border border-[#E8720C]/40 rounded-lg bg-card px-4 py-3">
                 <input
                   type="text"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSend()}
                   placeholder="Sexo, idade, queixa principal e tempo..."
-                  className="flex-1 bg-transparent outline-none text-foreground placeholder:text-muted-foreground text-sm sm:text-base"
+                  className="flex-1 bg-transparent outline-none text-foreground placeholder:text-muted-foreground text-base sm:text-lg"
                   style={{ fontFamily: "'Inter', sans-serif" }}
                 />
                 <button
                   onClick={handleSend}
-                  className="text-[#E8720C] hover:text-[#D4841A] transition-colors p-1"
+                  className="text-[#E8720C] hover:text-[#D4841A] transition-colors p-2"
                 >
-                  <Send className="h-5 w-5" />
+                  <Send className="h-6 w-6" />
                 </button>
               </div>
             </div>
