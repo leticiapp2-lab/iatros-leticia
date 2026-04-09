@@ -15,6 +15,16 @@ import { hipertireoidismo } from "./criteria/hipertireoidismo";
 import { osteoporose } from "./criteria/osteoporose";
 import { tuberculose } from "./criteria/tuberculose";
 import { hanseniase } from "./criteria/hanseniase";
+import { tab } from "./criteria/tab";
+import { tea } from "./criteria/tea";
+import { tdah } from "./criteria/tdah";
+import { esquizofrenia } from "./criteria/esquizofrenia";
+import { panico } from "./criteria/panico";
+import { tept } from "./criteria/tept";
+import { toc } from "./criteria/toc";
+import { tag } from "./criteria/tag";
+import { fobiaEspecifica } from "./criteria/fobiaEspecifica";
+import { agorafobia } from "./criteria/agorafobia";
 
 // ── Original diseases (inline for backward compat) ──
 
@@ -90,66 +100,6 @@ const depressao: InteractiveDisease = {
         : !exclMet
         ? "Exclusões não confirmadas"
         : "Todos os critérios DSM-5 para TDM foram preenchidos.",
-    };
-  },
-};
-
-const tag: InteractiveDisease = {
-  id: "tag",
-  name: "Transtorno de Ansiedade Generalizada",
-  shortName: "TAG",
-  criteriaSetName: "DSM-5",
-  groups: [
-    {
-      id: "tag-req",
-      title: "Requisitos Obrigatórios",
-      allRequired: true,
-      items: [
-        { id: "tag-req-1", label: "Preocupação excessiva, maioria dos dias, >6 meses" },
-        { id: "tag-req-2", label: "Difícil de controlar a preocupação" },
-      ],
-    },
-    {
-      id: "tag-sx",
-      title: "Sintomas Associados (≥3 necessários)",
-      minRequired: 3,
-      items: [
-        { id: "tag-1", label: "Inquietação/agitação" },
-        { id: "tag-2", label: "Fadiga fácil" },
-        { id: "tag-3", label: "Dificuldade de concentração" },
-        { id: "tag-4", label: "Irritabilidade" },
-        { id: "tag-5", label: "Tensão muscular" },
-        { id: "tag-6", label: "Perturbação do sono" },
-      ],
-    },
-    {
-      id: "tag-func",
-      title: "Impacto Funcional",
-      allRequired: true,
-      items: [
-        { id: "tag-func-1", label: "Causa sofrimento clinicamente significativo" },
-      ],
-    },
-  ],
-  evaluate: (checked) => {
-    const reqMet = checked.has("tag-req-1") && checked.has("tag-req-2");
-    const sxCount = countInGroup(checked, tag.groups[1]);
-    const funcMet = checked.has("tag-func-1");
-    const met = reqMet && sxCount >= 3 && funcMet;
-    return {
-      met,
-      score: sxCount,
-      maxScore: 6,
-      summary: met
-        ? `✅ Critérios preenchidos (${sxCount}/6 sintomas)`
-        : `❌ Critérios NÃO preenchidos (${sxCount}/6 sintomas)`,
-      detail: !reqMet
-        ? "Requisitos obrigatórios não atendidos"
-        : sxCount < 3
-        ? `Necessário ≥3 sintomas associados (atual: ${sxCount})`
-        : !funcMet
-        ? "Impacto funcional não confirmado"
-        : "Todos os critérios DSM-5 para TAG foram preenchidos.",
     };
   },
 };
@@ -506,6 +456,15 @@ const diabetesT2: InteractiveDisease = {
 export const interactiveDiseases: InteractiveDisease[] = [
   depressao,
   tag,
+  tab,
+  esquizofrenia,
+  tdah,
+  tea,
+  panico,
+  tept,
+  toc,
+  fobiaEspecifica,
+  agorafobia,
   les,
   enxaquecaSemAura,
   ibs,
