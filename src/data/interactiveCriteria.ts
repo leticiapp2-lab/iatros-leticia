@@ -607,6 +607,7 @@ export const interactiveDiseases: InteractiveDisease[] = [
   fobiaEspecifica,
   agorafobia,
   les,
+  artriteReumatoide,
   enxaquecaSemAura,
   ibs,
   pcos,

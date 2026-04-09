@@ -17,7 +17,7 @@ const specialtyGroups: SpecialtyGroup[] = [
   },
   {
     name: "Reumatologia",
-    diseaseIds: ["les", "osteoartrite-joelho", "fibromialgia-acr", "fibromialgia-aapt", "osteoporose"],
+    diseaseIds: ["les", "artrite-reumatoide", "osteoartrite-joelho", "fibromialgia-acr", "fibromialgia-aapt", "osteoporose"],
   },
   {
     name: "Endocrinologia",
