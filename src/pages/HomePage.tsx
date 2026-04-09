@@ -48,7 +48,7 @@ export default function HomePage() {
       <main className="flex-1 flex items-start justify-center px-6 py-10 sm:py-16">
         <div className="max-w-6xl w-full flex flex-col md:flex-row items-center md:items-start gap-8 md:gap-14">
           {/* Mascot */}
-          <div className="shrink-0 w-56 sm:w-64 md:w-80">
+          <div className="shrink-0 w-[42rem] sm:w-[48rem] md:w-[60rem]">
             <img src={mascot} alt="Iatros - Auxiliar Clínico" className="w-full h-auto" />
           </div>
 
