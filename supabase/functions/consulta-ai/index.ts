@@ -358,6 +358,122 @@ REGRAS FINAIS
 - NÃO gere checklist genérico — cada pergunta deve ter função diagnóstica clara
 - Pense: "que pergunta mudaria minha conduta ou meu ranking de hipóteses?"
 
+======================================================================
+TEMPLATES DE REFERÊNCIA CLÍNICA (use como base quando a queixa se enquadrar)
+======================================================================
+
+Quando a queixa principal corresponder a um dos templates abaixo, use-o como BASE OBRIGATÓRIA e EXPANDA conforme o caso específico (idade, sexo, tempo, comorbidades). Você pode adicionar itens, mas NÃO deve omitir categorias ou itens presentes no template.
+
+--- TEMPLATE: DOR LOMBAR ---
+
+Grupo: "🚩 Red Flags - Emergências"
+Itens (yes_no, isRedFlag: true):
+- Retenção urinária aguda
+- Incontinência urinária ou fecal
+- Anestesia em sela
+- Alteração do tônus retal
+- Déficit neurológico progressivo em MMII
+
+Grupo: "🚩 Red Flags - Fratura"
+Itens (yes_no, isRedFlag: true):
+- Trauma significativo
+- Trauma menor (se >75 anos, osteoporose ou uso de corticoide)
+- Uso crônico de corticosteroides
+- Idade ≥75 anos
+- História de osteoporose
+- Queda recente
+
+Grupo: "🚩 Red Flags - Malignidade"
+Itens (yes_no, isRedFlag: true):
+- História de câncer
+- Perda de peso inexplicada
+- Falha em melhorar após 1 mês
+- Início após 50 anos de idade
+- Múltiplos fatores de risco para câncer
+- Suspeita clínica forte de câncer
+
+Grupo: "🚩 Red Flags - Infecção"
+Itens (yes_no, isRedFlag: true):
+- Febre
+- Imunossupressão
+- Uso de drogas intravenosas
+- Infecção recente
+- Cateter urinário ou linha central
+
+Grupo: "🚩 Red Flags - Vascular"
+Itens (yes_no, isRedFlag: true):
+- Desconforto abdominal
+- Massa abdominal pulsátil
+- Homem >50 anos tabagista
+
+Grupo: "Características da Dor"
+Itens (yes_no):
+- Dor axial (apenas lombar)
+- Dor irradiada para MMII
+- Dor bilateral em MMII
+- Dor torácica associada
+- Dor difusa/generalizada
+- Início súbito
+- Início gradual
+- Dor intensa (≥7/10)
+
+Grupo: "Fatores Agravantes/Atenuantes"
+Itens (yes_no):
+- Piora ao sentar
+- Piora com extensão lombar
+- Piora ao caminhar
+- Melhora ao flexionar/sentar
+- Melhora com exercício
+
+Grupo: "Sintomas Neurológicos"
+Itens (yes_no):
+- Parestesias em MMII
+- Fraqueza em MMII
+- Alteração de sensibilidade
+- Alteração de reflexos
+- Claudicação neurogênica
+- Déficit sensorial em nádegas/períneo
+
+Grupo: "Sintomas Inflamatórios"
+Itens (yes_no):
+- Rigidez matinal
+- Dor alternante em nádegas
+- Despertar noturno por dor lombar
+- Idade jovem (<45 anos)
+
+Grupo: "Fatores de Risco Ocupacionais/Estilo de Vida"
+Itens (yes_no):
+- Trabalho sedentário/sentado prolongado
+- Levantamento de peso repetitivo
+- Tabagismo
+- Sedentarismo
+- Atleta jovem (esportes repetitivos)
+
+Grupo: "Yellow Flags (Fatores Psicossociais)"
+Itens (yes_no):
+- Depressão
+- Ansiedade
+- Catastrofização
+- Obesidade
+- Baixa capacidade de enfrentamento
+- Trabalho físico de alta intensidade
+
+Grupo: "História Prévia"
+Itens (yes_no):
+- Dor lombar recorrente
+- Procedimento espinhal recente
+- Cirurgia lombar prévia
+
+Grupo: "Duração dos Sintomas"
+Itens (select, opções):
+- Aguda (<6 semanas)
+- Subaguda (6-12 semanas)
+- Crônica (>12 semanas)
+
+--- FIM TEMPLATE DOR LOMBAR ---
+
+Para queixas NÃO cobertas por um template, use o raciocínio clínico descrito acima para gerar o checklist do zero.
+
 Você DEVE responder usando a função generate_checklist.`;
 
 const SUBJECTIVE_SUMMARY_PROMPT = `Você é um assistente clínico. Com base EXCLUSIVAMENTE nos dados preenchidos pelo usuário, gere:
