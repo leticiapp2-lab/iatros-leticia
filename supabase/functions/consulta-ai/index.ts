@@ -625,6 +625,200 @@ Itens (yes_no):
 
 --- FIM TEMPLATE CEFALEIA ---
 
+--- TEMPLATE: TONTURA/VERTIGEM ---
+
+Grupo: "Timing - Padrão Temporal"
+Itens (yes_no):
+- Episódica (segundos a horas)
+- Aguda/contínua (dias a semanas)
+- Crônica (>3 meses)
+
+Grupo: "Triggers - Episódica Desencadeada"
+Itens (yes_no):
+- Desencadeada por mudança de posição da cabeça
+- Desencadeada ao deitar
+- Desencadeada ao virar na cama
+- Desencadeada ao sentar da posição supina
+- Desencadeada ao inclinar cabeça para trás
+- Desencadeada ao curvar-se para frente
+- Desencadeada ao levantar-se (ortostática)
+- Desencadeada por movimento rápido da cabeça
+
+Grupo: "Triggers - Episódica Espontânea"
+Itens (yes_no):
+- Sem gatilho identificável
+- Relacionada a menstruação
+- Relacionada a alimentos específicos
+- Relacionada a estresse
+- Relacionada a privação de sono
+
+Grupo: "Triggers - Aguda Desencadeada"
+Itens (yes_no):
+- Trauma craniano recente
+- Medicação nova
+- Exposição a toxinas
+- Procedimento dentário prolongado
+- Posição recumbente prolongada (salão de beleza)
+
+Grupo: "Duração dos Episódios"
+Itens (yes_no):
+- Segundos (<1 minuto)
+- Minutos
+- 20 minutos a 12 horas
+- 12-36 horas
+- Dias a semanas
+- Contínua
+
+Grupo: "Características da Tontura"
+Itens (yes_no):
+- Vertigem rotatória (ambiente girando)
+- Sensação de cabeça leve
+- Desequilíbrio/instabilidade
+- Pré-síncope (sensação de desmaio iminente)
+- Descrição vaga/inespecífica
+
+Grupo: "🚩 Red Flags - Sintomas Neurológicos Centrais (Deadly Ds)"
+Itens (yes_no, isRedFlag: true):
+- Diplopia (visão dupla)
+- Disartria (fala arrastada)
+- Disfagia (dificuldade para engolir)
+- Disfonia (alteração da voz)
+- Dismetria (incoordenação)
+- Disestesia (alteração sensorial)
+- Déficit motor focal
+- Alteração do nível de consciência
+- Ataxia de marcha grave
+- Ataxia apendicular
+
+Grupo: "🚩 Red Flags - Outros Sinais de Alerta"
+Itens (yes_no, isRedFlag: true):
+- Cefaleia súbita/intensa
+- Cefaleia nova
+- Dor cervical intensa
+- Incapacidade de ficar em pé sem apoio
+- Início súbito (segundos)
+
+Grupo: "Sintomas Auditivos"
+Itens (yes_no):
+- Perda auditiva unilateral
+- Perda auditiva flutuante
+- Zumbido (tinnitus)
+- Plenitude/pressão auricular
+- Hiperacusia
+
+Grupo: "Sintomas Associados - Autonômicos"
+Itens (yes_no):
+- Náusea
+- Vômitos
+- Sudorese
+- Palidez
+
+Grupo: "Sintomas Associados - Visuais"
+Itens (yes_no):
+- Oscilopsia (visão oscilante)
+- Visão turva
+- Fotofobia
+- Aura visual
+
+Grupo: "Sintomas Associados - Outros"
+Itens (yes_no):
+- Cefaleia
+- Dor cervical
+- Ansiedade/pânico
+- Palpitações
+- Dor torácica
+- Dispneia
+
+Grupo: "Padrão de Nistagmo (se observado)"
+Itens (yes_no):
+- Nistagmo horizontal
+- Nistagmo torsional
+- Nistagmo vertical
+- Nistagmo que muda de direção com olhar
+- Nistagmo presente em posição neutra
+- Nistagmo apenas com mudança de posição
+- Latência de 5-20 segundos
+- Fatigabilidade (60 segundos)
+
+Grupo: "Fatores Agravantes"
+Itens (yes_no):
+- Piora com movimento da cabeça
+- Piora com movimento dos olhos
+- Piora ao caminhar
+- Piora em ambientes visuais complexos
+
+Grupo: "Fatores Atenuantes"
+Itens (yes_no):
+- Melhora ao fixar olhar
+- Melhora ao permanecer imóvel
+- Melhora ao fechar os olhos
+
+Grupo: "Fatores de Risco - Cardiovasculares"
+Itens (yes_no):
+- Hipertensão
+- Diabetes mellitus
+- Dislipidemia
+- Tabagismo
+- Doença arterial coronariana
+- Fibrilação atrial
+- AVC prévio
+- AIT prévio
+- Idade >50 anos
+
+Grupo: "Fatores de Risco - Outros"
+Itens (yes_no):
+- Enxaqueca prévia
+- História familiar de enxaqueca
+- Cinetose na infância
+- Osteoporose/osteopenia
+- Deficiência de vitamina D
+- Idade avançada (>60 anos)
+- Sexo feminino
+
+Grupo: "Medicações em Uso"
+Itens (yes_no):
+- Anti-hipertensivos
+- Diuréticos
+- Sedativos/benzodiazepínicos
+- Anticonvulsivantes
+- Antidepressivos
+- Aminoglicosídeos
+- Quimioterápicos ototóxicos
+- Álcool
+
+Grupo: "História Prévia"
+Itens (yes_no):
+- Episódios prévios similares
+- Remissão espontânea prévia
+- Recorrências
+- Infecção viral recente
+- Otite média recente
+- Cirurgia otológica prévia
+
+Grupo: "Sintomas Posicionais Específicos (VPPB)"
+Itens (yes_no):
+- Latência antes do início dos sintomas
+- Sintomas <1 minuto
+- Modificação de movimentos para evitar sintomas
+- Nistagmo reverso ao sentar
+
+Grupo: "Sintomas de Neurite Vestibular"
+Itens (yes_no):
+- Início súbito de vertigem intensa
+- Vertigem contínua por dias
+- Náusea/vômitos intensos
+- Sem perda auditiva
+- Desequilíbrio com queda para um lado
+- Idade 30-50 anos
+
+Grupo: "Sintomas de Doença de Ménière"
+Itens (yes_no):
+- Episódios de 20 min a 12 horas
+- Perda auditiva flutuante
+- Tinnitus
+
+--- FIM TEMPLATE TONTURA ---
+
 Para queixas NÃO cobertas por um template, use o raciocínio clínico descrito acima para gerar o checklist do zero.
 
 Você DEVE responder usando a função generate_checklist.`;
