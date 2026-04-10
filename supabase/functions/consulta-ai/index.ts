@@ -819,6 +819,236 @@ Itens (yes_no):
 
 --- FIM TEMPLATE TONTURA ---
 
+--- TEMPLATE: DISPEPSIA ---
+
+Grupo: "Red Flags - Sinais de Alarme"
+Itens (yes_no, isRedFlag: true):
+- Perda de peso inexplicada
+- Perda de peso >10 kg
+- Disfagia
+- Disfagia progressiva
+- Odinofagia
+- Vômitos persistentes/recorrentes
+- Hematêmese
+- Melena
+- Anemia
+- Massa abdominal palpável
+- Linfadenopatia
+- Icterícia
+
+Grupo: "Idade e Fatores Demográficos"
+Itens (yes_no):
+- Idade ≥60 anos (isRedFlag: true)
+- Idade ≥45 anos
+- Sexo feminino
+- Idade 40 anos
+
+Grupo: "Sintomas Cardinais - Síndrome do Desconforto Pós-prandial (PDS)"
+Itens (yes_no):
+- Plenitude pós-prandial incômoda
+- Saciedade precoce incômoda
+- Sintomas ≥3 dias/semana
+- Sintomas relacionados às refeições
+- Incapacidade de terminar refeição de tamanho normal
+
+Grupo: "Sintomas Cardinais - Síndrome da Dor Epigástrica (EPS)"
+Itens (yes_no):
+- Dor epigástrica incômoda
+- Queimação epigástrica incômoda
+- Sintomas ≥1 dia/semana
+- Dor não relacionada às refeições
+- Dor pós-prandial
+
+Grupo: "Duração dos Sintomas"
+Itens (yes_no):
+- Sintomas ≥3 meses
+- Início dos sintomas ≥6 meses antes
+- Sintomas crônicos/recorrentes
+
+Grupo: "Sintomas Associados - Gastrointestinais"
+Itens (yes_no):
+- Náusea pós-prandial
+- Náusea grave/persistente
+- Distensão abdominal (bloating)
+- Sensação de "gases"
+- Eructação excessiva
+- Pirose (azia)
+- Regurgitação
+- Vômitos ocasionais
+
+Grupo: "Sintomas Associados - Outros"
+Itens (yes_no):
+- Aversão alimentar
+- Restrição alimentar
+- Fadiga crônica
+
+Grupo: "Localização da Dor"
+Itens (yes_no):
+- Dor epigástrica
+- Dor em região superior do abdome
+- Dor irradiando para as costas
+- Dor pontual localizada (≤2 cm)
+
+Grupo: "Padrão da Dor"
+Itens (yes_no):
+- Dor em crescendo-decrescendo
+- Dor episódica ≥30 minutos
+- Dor grave/intensa
+- Dor noturna que acorda o paciente
+
+Grupo: "Relação com Alimentação"
+Itens (yes_no):
+- Piora com alimentação
+- Melhora com alimentação
+- Sem relação com refeições
+- Piora com alimentos gordurosos
+- Piora com porções grandes
+
+Grupo: "Sintomas Sugestivos de Refluxo (DRGE)"
+Itens (yes_no):
+- Pirose predominante
+- Pirose aliviada por antiácido
+- Piora ao deitar ou curvar-se
+- Regurgitação ácida
+
+Grupo: "Sintomas Sugestivos de Úlcera Péptica"
+Itens (yes_no):
+- Dor em queimação epigástrica
+- Dor que melhora imediatamente após comer
+- Dor que piora 2-3 horas após refeição
+- Dor noturna que acorda o paciente
+- Dor aliviada por antiácidos
+- Dor em jejum
+
+Grupo: "Sintomas Sugestivos de Doença Biliar"
+Itens (yes_no):
+- Dor episódica em crescendo-decrescendo
+- Dor intensa durando ≥30 minutos
+- Dor irradiando para dorso
+- Dor no hipocôndrio direito
+- Intolerância a alimentos gordurosos
+
+Grupo: "Sintomas Sugestivos de Gastroparesia"
+Itens (yes_no):
+- Vômitos recorrentes/frequentes
+- Náusea grave
+- Saciedade precoce intensa
+- Distensão abdominal pós-prandial
+- Perda de peso com náusea/vômitos
+- Diabetes de longa data
+
+Grupo: "Sintomas Sugestivos de SII (Sobreposição)"
+Itens (yes_no):
+- Dor abdominal relacionada à evacuação
+- Alteração na frequência das evacuações
+- Alteração na consistência das fezes
+- Distensão abdominal inferior
+
+Grupo: "Fatores de Risco - Medicações"
+Itens (yes_no):
+- Uso de AINEs
+- Uso de aspirina (incluindo dose baixa)
+- Uso de ferro oral
+- Uso de bloqueadores de canal de cálcio
+- Uso de IECA
+- Uso de metilxantinas/teofilina
+- Uso de corticosteroides
+- Uso de antibióticos (tetraciclinas, eritromicina)
+- Uso de bisfosfonatos
+- Uso de orlistat
+- Uso de digitálicos
+- Uso de suplementos de potássio
+- Uso prolongado de IBP
+
+Grupo: "Fatores de Risco - Estilo de Vida"
+Itens (yes_no):
+- Tabagismo
+- Tabagismo pesado
+- Consumo de álcool
+- Consumo excessivo de café
+
+Grupo: "Fatores Dietéticos"
+Itens (yes_no):
+- Refeições grandes
+- Dieta rica em gordura
+- Alimentos com alto teor de FODMAPs
+- Consumo de trigo/glúten
+
+Grupo: "Fatores de Risco - Infecção"
+Itens (yes_no):
+- Infecção gastrointestinal aguda recente
+- Gastroenterite prévia
+- Status de H. pylori desconhecido
+- H. pylori positivo conhecido
+
+Grupo: "Fatores de Risco - H. pylori e Úlcera"
+Itens (yes_no):
+- Infecção prévia por H. pylori
+- H. pylori não tratado
+- Uso de AINEs
+- Uso de aspirina
+- História de úlcera péptica
+
+Grupo: "Fatores de Risco - Câncer Gástrico"
+Itens (yes_no, isRedFlag: true):
+- História familiar de câncer gástrico
+- Origem de região de alta incidência
+- Etnia de alto risco
+- Gastrite atrófica
+- Metaplasia intestinal
+
+Grupo: "Fatores de Risco - Doença Biliar/Pancreática"
+Itens (yes_no):
+- História de colelitíase
+- Etilismo
+- Predisposição genética para pancreatite
+- Esteatorreia
+
+Grupo: "História Prévia"
+Itens (yes_no):
+- Dispepsia recorrente
+- Úlcera péptica prévia
+- Infecção por H. pylori prévia
+- Endoscopia prévia normal
+- Uso prévio de IBP
+- Falha ao tratamento com IBP
+- Erradicação prévia de H. pylori
+- Cirurgia gástrica prévia
+
+Grupo: "História Familiar"
+Itens (yes_no):
+- História familiar de DRGE
+- História familiar de úlcera péptica
+- História familiar de câncer gastrointestinal
+- História familiar de doença celíaca
+
+Grupo: "Comorbidades Associadas"
+Itens (yes_no):
+- Síndrome do intestino irritável
+- DRGE
+- Síndrome da fadiga crônica
+- Enxaqueca
+- Bexiga hiperativa
+- Fibromialgia
+- Diabetes mellitus
+- Doença celíaca
+- Deficiência de ferro inexplicada
+- Doenças autoimunes
+
+Grupo: "Comorbidades Psiquiátricas"
+Itens (yes_no):
+- Ansiedade
+- Depressão
+- História prévia de ansiedade
+
+Grupo: "Fatores Psicológicos"
+Itens (yes_no):
+- Estresse significativo
+- Medo de câncer
+- Preocupação com doença cardíaca
+
+--- FIM TEMPLATE DISPEPSIA ---
+
 Para queixas NÃO cobertas por um template, use o raciocínio clínico descrito acima para gerar o checklist do zero.
 
 Você DEVE responder usando a função generate_checklist.`;
