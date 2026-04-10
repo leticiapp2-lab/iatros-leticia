@@ -17,7 +17,7 @@ export default function SubjetivoStep() {
   const { subjetivoChecklist, subjetivoAnswers, subjetivoFreeText, subjetivoSummary } = state;
 
   const answeredCount = Object.values(subjetivoAnswers).filter(
-    (a) => a.checked || a.value
+    (a) => a.checked || a.value || (a.selectedOptions?.length ?? 0) > 0
   ).length;
   const totalCount = subjetivoChecklist?.reduce((sum, g) => sum + g.items.length, 0) ?? 0;
 

@@ -1,6 +1,6 @@
 export type ConsultationType = "primeira" | "retorno";
 
-export type ChecklistItemType = "yes_no" | "text" | "select";
+export type ChecklistItemType = "yes_no" | "text" | "select" | "multi_select";
 
 export interface ChecklistItem {
   id: string;
@@ -10,17 +10,20 @@ export interface ChecklistItem {
   isRedFlag?: boolean;
 }
 
+export interface ChecklistAnswer {
+  itemId: string;
+  checked: boolean;
+  value?: string;
+  selectedOptions?: string[];
+}
+
 export interface ChecklistGroupData {
   id: string;
   title: string;
   items: ChecklistItem[];
 }
 
-export interface ChecklistAnswer {
-  itemId: string;
-  checked: boolean;
-  value?: string;
-}
+// ChecklistAnswer is now defined above with selectedOptions
 
 export interface SummaryCategory {
   category: string;

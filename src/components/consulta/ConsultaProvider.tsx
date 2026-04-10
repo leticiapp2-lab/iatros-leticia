@@ -122,10 +122,10 @@ export function ConsultaProvider({ children }: { children: ReactNode }) {
     setIsLoading(true);
     try {
       const answersWithQuestions = Object.values(state.subjetivoAnswers)
-        .filter((a) => a.checked || a.value)
+        .filter((a) => a.checked || a.value || (a.selectedOptions?.length ?? 0) > 0)
         .map((a) => {
-          const question = state.subjetivoChecklist?.flatMap((g) => g.items).find((i) => i.id === a.itemId)?.question;
-          return { question, checked: a.checked, value: a.value };
+          const item = state.subjetivoChecklist?.flatMap((g) => g.items).find((i) => i.id === a.itemId);
+          return { question: item?.question, type: item?.type, checked: a.checked, value: a.value, selectedOptions: a.selectedOptions };
         });
 
       const result: SubjectiveSummary = await callConsultaAI("generate-subjective-summary", {

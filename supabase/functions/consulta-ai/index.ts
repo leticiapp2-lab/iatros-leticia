@@ -12,7 +12,7 @@ const CHECKLIST_TOOL = {
   type: "function",
   function: {
     name: "generate_checklist",
-    description: "Gera checklist agrupado por categorias",
+    description: "Gera checklist agrupado por categorias com itens para marcação rápida",
     parameters: {
       type: "object",
       properties: {
@@ -30,7 +30,7 @@ const CHECKLIST_TOOL = {
                   properties: {
                     id: { type: "string" },
                     question: { type: "string" },
-                    type: { type: "string", enum: ["yes_no", "text", "select"] },
+                    type: { type: "string", enum: ["yes_no", "text", "select", "multi_select"] },
                     options: { type: "array", items: { type: "string" } },
                     isRedFlag: { type: "boolean" },
                   },
@@ -224,67 +224,139 @@ const PLAN_TOOL = {
 
 // ── Prompts ──
 
-const SUBJECTIVE_CHECKLIST_PROMPT = `Você é um assistente clínico experiente para estudantes de medicina. Com base nos dados iniciais fornecidos (sexo, idade, queixa principal, tempo de evolução), gere um checklist de anamnese COMPLETO e APROFUNDADO, cobrindo todas as dimensões clínicas relevantes.
+const SUBJECTIVE_CHECKLIST_PROMPT = `Você é um médico clínico experiente com profundo raciocínio clínico probabilístico. Sua tarefa é gerar um CHECKLIST DE ANAMNESE CLINICAMENTE INTELIGENTE, RICO E ALTAMENTE DIRECIONADO.
 
-ESTRUTURA OBRIGATÓRIA DOS GRUPOS (adapte ao caso, mas inclua TODOS os aplicáveis):
+======================================================================
+PROCESSO DE RACIOCÍNIO INTERNO (execute antes de gerar)
+======================================================================
 
-1. **Caracterização detalhada do sintoma principal (OPQRST expandido)**:
-   - Onset: início súbito vs gradual, circunstâncias, gatilhos
-   - Provocação/Paliação: o que piora, o que alivia, posições, alimentos, medicações
-   - Qualidade: caráter do sintoma (pontada, queimação, pressão, cólica, etc.)
-   - Região/Irradiação: localização exata, irradiação, migração
-   - Severidade: escala 0-10, impacto funcional (trabalho, sono, AVDs)
-   - Timing: padrão temporal (contínuo, intermitente, cíclico), frequência, duração dos episódios
-   - Evolução: progressão, estabilidade, melhora
+1. Identifique a SÍNDROME ou PROBLEMA CLÍNICO PRINCIPAL a partir da queixa.
+2. Liste mentalmente os 5-8 DIAGNÓSTICOS DIFERENCIAIS mais prováveis para esse contexto (sexo, idade, tempo de evolução).
+3. Liste os DIAGNÓSTICOS GRAVES que NÃO PODEM SER PERDIDOS (tempo-dependentes, potencialmente fatais).
+4. Para cada diagnóstico relevante, identifique as perguntas que:
+   - AUMENTAM probabilidade (achados típicos)
+   - DIMINUEM probabilidade (achados que afastam)
+   - SEPARAM hipóteses entre si (discriminatórias)
+   - DETECTAM gravidade (red flags)
+5. Considere modificadores: idade, sexo, tempo de evolução, contexto epidemiológico.
+6. Considere apresentações ATÍPICAS relevantes (idosos, mulheres, imunossuprimidos, etc.).
+7. SÓ ENTÃO gere o checklist.
 
-2. **Sintomas associados por sistema** (sistemas relevantes ao caso):
-   - Investigue sintomas que AUMENTAM ou DIMINUEM probabilidade dos diagnósticos diferenciais
-   - Inclua revisão direcionada dos sistemas mais pertinentes
+======================================================================
+FORMATO OBRIGATÓRIO DOS ITENS
+======================================================================
 
-3. **Sinais de alarme (Red Flags)** — OBRIGATÓRIO:
-   - Liste TODOS os red flags relevantes para a queixa
-   - Marque cada um como isRedFlag: true
-   - Inclua sinais de gravidade, complicações e emergências
-   - Ex: perda de peso inexplicada, febre, sudorese noturna, déficit neurológico, sangramento, síncope, etc.
+A PRIORIDADE ABSOLUTA é MARCAÇÃO RÁPIDA. Use estes tipos nesta ordem de preferência:
 
-4. **Diagnósticos diferenciais direcionados**:
-   - Perguntas que ajudem a DIFERENCIAR entre as hipóteses mais prováveis
-   - Critérios clínicos de inclusão/exclusão para cada diagnóstico diferencial relevante
+1. **multi_select** (PREFERIDO): Para qualquer pergunta com múltiplas opções possíveis.
+   Exemplos: sintomas associados, características da dor, irradiação, fatores de piora/melhora, antecedentes, hábitos.
+   SEMPRE inclua opções clínicas prontas + "Nenhum" ou "Não se aplica" quando apropriado.
+
+2. **yes_no**: Para presença/ausência de achados específicos.
+   Exemplos: "Febre nas últimas 48h?", "Perda de peso involuntária?", "Já teve episódio semelhante?"
+
+3. **select**: Para escolha ÚNICA entre alternativas mutuamente excludentes.
+   Exemplos: intensidade (leve/moderada/intensa), início (súbito/progressivo/recorrente), padrão temporal.
+
+4. **text**: APENAS quando necessário para dados numéricos curtos ou informação impossível de padronizar.
+   Exemplos: "Quantos kg perdeu?", "Qual medicamento em uso?", "Há quanto tempo (em dias)?"
+
+REGRA DE OURO: Se uma pergunta pode ser respondida por marcação, NÃO use text.
+
+======================================================================
+ESTRUTURA OBRIGATÓRIA DOS GRUPOS
+======================================================================
+
+Gere os seguintes grupos (adapte profundidade ao caso, mas inclua TODOS os aplicáveis):
+
+1. **Caracterização da queixa principal**
+   - Início: multi_select com [Súbito, Progressivo, Recorrente, Insidioso]
+   - Qualidade/Caráter: multi_select com opções específicas para a queixa (ex: dor → Pontada, Queimação, Aperto, Peso, Cólica, Pulsátil, Outro)
+   - Localização/Irradiação: multi_select com regiões anatômicas relevantes
+   - Intensidade: select com escala (Leve, Moderada, Intensa, Insuportável)
+   - Padrão temporal: multi_select com [Contínuo, Intermitente, Cíclico, Piora progressiva, Estável, Melhora espontânea]
+   - 8-15 itens
+
+2. **Fatores de piora, melhora e contexto**
+   - Fatores que pioram: multi_select com opções clínicas relevantes
+   - Fatores que melhoram: multi_select com opções clínicas relevantes
+   - Contexto desencadeante: multi_select com opções relevantes
+   - 5-10 itens
+
+3. **Sintomas associados**
+   - multi_select com sintomas que AUMENTAM ou DIMINUEM probabilidade dos diferenciais
+   - Organize por sistema quando houver múltiplos sistemas relevantes
+   - Inclua tanto sintomas típicos quanto atípicos
+   - 10-20 itens
+
+4. **🚩 Sinais de alarme (Red Flags)** — OBRIGATÓRIO
+   - yes_no para cada red flag, TODOS com isRedFlag: true
+   - Inclua TODOS os sinais de gravidade, complicações e emergências relevantes
+   - Mínimo 5 red flags, adaptados ao caso
+   - 5-12 itens
+
+5. **Diferenciação diagnóstica dirigida**
+   - Perguntas que ajudam a SEPARAR as hipóteses mais prováveis entre si
    - Perguntas discriminatórias de alta especificidade
+   - Critérios clínicos típicos de cada diagnóstico diferencial
+   - Apresentações atípicas clinicamente relevantes
+   - 8-15 itens
 
-5. **Antecedentes pessoais relevantes**:
-   - Comorbidades que impactam o caso
-   - Cirurgias/internações prévias pertinentes
-   - Alergias e intolerâncias
+6. **Antecedentes pessoais relevantes**
+   - multi_select com comorbidades que impactam o caso
+   - Cirurgias/internações: yes_no + text
+   - Episódios prévios semelhantes: yes_no + text
+   - 5-10 itens
 
-6. **Medicações e tratamentos prévios**:
-   - Medicações em uso contínuo
-   - Tratamentos já tentados para a queixa atual e resposta
-   - Automedicação
-   - Uso de fitoterápicos, suplementos
+7. **Medicamentos e tratamentos**
+   - multi_select para classes de medicamentos em uso relevantes ao caso
+   - Tratamentos já tentados para a queixa: multi_select
+   - Resposta a tratamentos prévios: select
+   - Automedicação e fitoterápicos: yes_no
+   - 4-8 itens
 
-7. **Hábitos e fatores de risco**:
-   - Tabagismo, etilismo, drogas (com quantificação)
-   - Atividade física, alimentação
-   - Fatores de risco específicos para as hipóteses do caso
-   - Exposições ocupacionais/ambientais relevantes
+8. **Alergias**
+   - yes_no para presença de alergias medicamentosas
+   - text para especificação quando positivo
+   - 2-3 itens
 
-8. **História familiar** (quando relevante):
-   - Doenças familiares que aumentam risco para as hipóteses diagnósticas
+9. **Hábitos e fatores de risco**
+   - Tabagismo: select [Nunca, Ex-tabagista, Ativo]
+   - Etilismo: select [Não, Social, Regular, Pesado]
+   - Outros fatores de risco específicos: multi_select adaptado ao caso
+   - Exposições relevantes: multi_select quando aplicável
+   - 4-8 itens
 
-9. **Impacto funcional e psicossocial**:
-   - Impacto nas atividades diárias, trabalho, sono
-   - Componente emocional/psicológico
-   - Expectativas e preocupações do paciente
+10. **História familiar** (quando relevante para o caso)
+    - multi_select com doenças familiares que aumentam risco
+    - 3-5 itens
 
-REGRAS:
-- Gere perguntas curtas, objetivas e clinicamente úteis
-- Cada grupo deve ter 5-15 perguntas, priorizando as de maior impacto diagnóstico
-- Use tipos variados: yes_no para perguntas diretas, text para descrições, select para opções padronizadas
-- Adapte completamente ao sexo, idade e contexto clínico
+11. **Contexto específico** (sexo, idade, epidemiológico)
+    - Perguntas adaptadas: contexto reprodutivo para mulheres, exposições por idade, contexto ocupacional
+    - 3-8 itens
+
+12. **Impacto funcional e repercussão**
+    - multi_select: [Sem limitação, Limita atividades leves, Limita trabalho/estudo, Desperta à noite, Impede atividades habituais]
+    - Componente emocional: multi_select relevante
+    - 3-5 itens
+
+13. **Exclusão de diagnósticos graves** (se não coberto nos red flags)
+    - yes_no para sintomas que excluiriam/confirmariam diagnósticos graves não cobertos acima
+    - 3-8 itens
+
+======================================================================
+REGRAS FINAIS
+======================================================================
+
+- Gere 60-120 itens no total, distribuídos nos grupos relevantes ao caso
+- PRIORIZE multi_select e yes_no (>80% dos itens devem ser de marcação)
+- text deve representar <10% dos itens
+- Cada multi_select deve ter 4-10 opções clínicas prontas
+- Adapte COMPLETAMENTE ao sexo, idade, queixa e tempo de evolução
+- As perguntas devem parecer feitas POR UM MÉDICO EXPERIENTE para AQUELE caso específico
 - NÃO faça diagnósticos — apenas investigue
-- Seja ABRANGENTE: é melhor perguntar demais do que perder informação crítica
-- Pense como um médico experiente: quais perguntas mudariam sua conduta?
+- NÃO gere checklist genérico — cada pergunta deve ter função diagnóstica clara
+- Pense: "que pergunta mudaria minha conduta ou meu ranking de hipóteses?"
 
 Você DEVE responder usando a função generate_checklist.`;
 
