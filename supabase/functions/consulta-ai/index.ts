@@ -472,6 +472,159 @@ Itens (select, opções):
 
 --- FIM TEMPLATE DOR LOMBAR ---
 
+--- TEMPLATE: CEFALEIA ---
+
+Grupo: "🚩 Red Flags - Emergências (SNNOOP10)"
+Itens (yes_no, isRedFlag: true):
+- Início súbito/abrupto (cefaleia em trovoada)
+- Febre
+- Sinais de irritação meníngea
+- Papiledema
+- Déficit neurológico focal
+- Alteração do nível de consciência
+- Dor ocular com sintomas autonômicos
+- Visão turva ou halos ao redor de luzes
+- Hiperemia conjuntival
+
+Grupo: "🚩 Red Flags - História e Padrão"
+Itens (yes_no, isRedFlag: true):
+- Idade >50 anos (início após 50 anos)
+- Mudança no padrão de cefaleia habitual
+- Cefaleia de início recente
+- Cefaleia progressiva
+- Pior cefaleia da vida
+- Apresentação atípica
+
+Grupo: "🚩 Red Flags - Fatores de Risco"
+Itens (yes_no, isRedFlag: true):
+- História de neoplasia
+- Imunossupressão (HIV, uso de imunossupressores)
+- Gravidez ou puerpério
+- Uso de anticoagulantes
+- Trauma craniano recente
+
+Grupo: "🚩 Red Flags - Sintomas Sistêmicos"
+Itens (yes_no, isRedFlag: true):
+- Perda de peso inexplicada
+- Hipertensão
+- Claudicação mandibular
+- Sintomas visuais (perda visual)
+- Mialgias
+
+Grupo: "🚩 Red Flags - Fatores Precipitantes"
+Itens (yes_no, isRedFlag: true):
+- Cefaleia posicional
+- Precipitada por tosse
+- Precipitada por espirro
+- Precipitada por exercício
+- Precipitada por manobra de Valsalva
+- Precipitada por atividade sexual
+
+Grupo: "Características da Dor"
+Itens (yes_no):
+- Unilateral
+- Bilateral
+- Pulsátil/latejante
+- Pressão/aperto
+- Localização orbital/supraorbital
+- Localização temporal
+- Localização frontal
+- Localização occipital
+
+Grupo: "Intensidade e Padrão Temporal"
+Itens (yes_no):
+- Intensidade leve
+- Intensidade moderada
+- Intensidade grave
+- Pico de intensidade em segundos a minutos
+- Desenvolvimento insidioso/gradual
+
+Grupo: "Duração dos Episódios"
+Itens (yes_no):
+- Segundos
+- Minutos
+- 15 minutos a 3 horas
+- 4 a 72 horas
+- 30 minutos a 7 dias
+- Contínua
+
+Grupo: "Frequência"
+Itens (yes_no):
+- Episódios isolados
+- Períodos de remissão ≥3 meses
+
+Grupo: "Sintomas Associados - Náusea/Vômito"
+Itens (yes_no):
+- Náusea
+- Vômitos
+
+Grupo: "Sintomas Associados - Sensibilidade"
+Itens (yes_no):
+- Fotofobia
+- Fonofobia
+- Osmofobia (intolerância a cheiros)
+
+Grupo: "Sintomas Associados - Autonômicos"
+Itens (yes_no):
+- Lacrimejamento ipsilateral
+- Hiperemia conjuntival ipsilateral
+- Rinorreia ipsilateral
+- Congestão nasal ipsilateral
+- Ptose palpebral ipsilateral
+- Miose ipsilateral
+- Sudorese facial/frontal ipsilateral
+
+Grupo: "Sintomas Associados - Comportamentais"
+Itens (yes_no):
+- Agitação/inquietação durante ataque
+- Preferência por ficar quieto/imóvel
+
+Grupo: "Sintomas Associados - Aura"
+Itens (yes_no):
+- Aura visual (luzes cintilantes, zigue-zague)
+- Aura sensorial (parestesias, dormência)
+- Aura de linguagem (disfasia)
+- Duração da aura 5-60 minutos
+
+Grupo: "Sintomas Associados - Outros"
+Itens (yes_no):
+- Dor cervical
+- Sensibilidade pericraniana
+- Sintomas prodrômicos (mudanças de humor, poliúria, desejo por alimentos)
+- Pósdromo (fadiga após cefaleia)
+
+Grupo: "Fatores Agravantes"
+Itens (yes_no):
+- Piora com atividade física
+- Piora com movimento
+- Não piora com atividade
+
+Grupo: "Fatores Desencadeantes"
+Itens (yes_no):
+- Menstruação/perimenstrual
+- Ovulação
+- Álcool
+- Cafeína
+- Tabaco
+- Estresse
+- Privação de sono
+- Alimentos específicos
+- Horário previsível (ex: noturno)
+
+Grupo: "História Pessoal"
+Itens (yes_no):
+- História familiar de enxaqueca
+- Cinetose na infância
+- Vertigem episódica na infância
+- Cefaleias recorrentes tipo "sinusite"
+- Cefaleias graves recorrentes com exame neurológico normal
+
+Grupo: "Uso de Medicações"
+Itens (yes_no):
+- Uso excessivo de analgésicos
+
+--- FIM TEMPLATE CEFALEIA ---
+
 Para queixas NÃO cobertas por um template, use o raciocínio clínico descrito acima para gerar o checklist do zero.
 
 Você DEVE responder usando a função generate_checklist.`;
