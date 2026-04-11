@@ -35,7 +35,7 @@ function ConsultaContent() {
       </header>
 
       {/* Nav */}
-      <nav className="w-full bg-gradient-to-r from-[#E8720C] to-[#F59E0B] px-6 py-3">
+      <nav className="w-full bg-gradient-to-r from-[#E8720C] to-[#F59E0B] px-6 py-3 relative z-20">
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-center gap-3 sm:gap-4">
           {navButtons.map((btn) => (
             <Link
