@@ -360,6 +360,76 @@ export default function Step2Preencher() {
           Limpar formulário
         </button>
       </aside>
+      </div>
+      {/* fim COLUNA ESQUERDA */}
+
+      {/* COLUNA DIREITA — Raciocínio clínico (desktop) */}
+      {hasRaciocinio && showRaciocinio && (
+        <aside className="hidden lg:block lg:sticky lg:top-4 lg:self-start max-h-[calc(100vh-2rem)]">
+          <div className="border border-border rounded-xl bg-card flex flex-col h-full max-h-[calc(100vh-2rem)] overflow-hidden">
+            <div className="flex items-center justify-between px-4 py-2.5 border-b border-border bg-[#7B2FBE]/5">
+              <div className="flex items-center gap-2">
+                <BookOpen className="h-4 w-4 text-[#7B2FBE]" />
+                <span className="text-sm font-semibold text-foreground">Raciocínio clínico do OpenEvidence</span>
+              </div>
+              <button
+                onClick={() => setShowRaciocinio(false)}
+                title="Ocultar painel"
+                className="text-muted-foreground hover:text-foreground"
+              >
+                <PanelRightClose className="h-4 w-4" />
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto p-4 prose prose-sm dark:prose-invert max-w-none prose-table:text-xs prose-headings:text-foreground prose-p:text-foreground prose-strong:text-foreground prose-li:text-foreground prose-table:border prose-th:border prose-td:border prose-th:px-2 prose-td:px-2 prose-th:bg-muted">
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>{raciocinioMd}</ReactMarkdown>
+            </div>
+          </div>
+        </aside>
+      )}
+
+      {/* Botão para reabrir painel quando colapsado (desktop) */}
+      {hasRaciocinio && !showRaciocinio && (
+        <button
+          onClick={() => setShowRaciocinio(true)}
+          className="hidden lg:flex fixed top-1/2 right-4 -translate-y-1/2 z-30 items-center gap-2 bg-[#7B2FBE] text-white text-xs font-semibold px-3 py-2 rounded-l-lg shadow-md hover:bg-[#6A28A6]"
+        >
+          <PanelRightOpen className="h-4 w-4" />
+          Raciocínio
+        </button>
+      )}
+
+      {/* Mobile: botão flutuante + drawer */}
+      {hasRaciocinio && (
+        <>
+          <button
+            onClick={() => setRaciocinioDrawer(true)}
+            className="lg:hidden fixed bottom-20 right-4 z-30 flex items-center gap-2 bg-[#7B2FBE] text-white text-sm font-semibold px-4 py-3 rounded-full shadow-lg"
+          >
+            <BookOpen className="h-4 w-4" />
+            📖 Raciocínio clínico
+          </button>
+          {raciocinioDrawer && (
+            <div className="lg:hidden fixed inset-0 z-50 bg-foreground/40" onClick={() => setRaciocinioDrawer(false)}>
+              <div
+                className="absolute inset-x-0 bottom-0 top-12 bg-card rounded-t-2xl flex flex-col"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+                  <span className="font-semibold text-foreground flex items-center gap-2">
+                    <BookOpen className="h-4 w-4 text-[#7B2FBE]" /> Raciocínio clínico
+                  </span>
+                  <button onClick={() => setRaciocinioDrawer(false)} className="text-muted-foreground">
+                    <X className="h-5 w-5" />
+                  </button>
+                </div>
+                <div className="flex-1 overflow-y-auto p-4 prose prose-sm dark:prose-invert max-w-none">
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>{raciocinioMd}</ReactMarkdown>
+                </div>
+              </div>
+            </div>
+          )}
+        </>
+      )}
 
       {showAdd && (
         <AddFieldModal
@@ -444,6 +514,7 @@ function AddFieldModal({
                 className="w-full bg-background border border-border rounded-md px-2 py-2 text-sm outline-none focus:ring-2 focus:ring-[#7B2FBE]/40"
               >
                 <option value="checkbox">Checkbox</option>
+                <option value="tristate">Toggle Presente/Ausente</option>
                 <option value="text">Texto curto</option>
                 <option value="number">Número</option>
                 <option value="radio">Radio (Pos/Neg/NR)</option>

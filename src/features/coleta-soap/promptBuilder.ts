@@ -16,7 +16,7 @@ function checkboxesAsProse(
   const positivos: string[] = [];
   const negativos: string[] = [];
   fields
-    .filter((f) => f.secao === secao && f.tipo === "checkbox")
+    .filter((f) => f.secao === secao && (f.tipo === "checkbox" || f.tipo === "tristate"))
     .forEach((f) => {
       const v = values[f.id];
       if (!v) return;
@@ -38,7 +38,7 @@ function otherFieldsAsLines(
 ): string[] {
   const out: string[] = [];
   fields
-    .filter((f) => f.secao === secao && f.tipo !== "checkbox")
+    .filter((f) => f.secao === secao && f.tipo !== "checkbox" && f.tipo !== "tristate")
     .forEach((f) => {
       const v = values[f.id];
       if (!v) return;
