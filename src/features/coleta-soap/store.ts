@@ -14,6 +14,7 @@ interface ColetaState {
   values: Record<string, FieldValue>;
   prompt: string;
   history: ColetaSnapshot[];
+  discarded: string[];
 
   setStep: (s: Step) => void;
   setContexto: (patch: Partial<ContextoClinico>) => void;
@@ -47,24 +48,23 @@ export const useColetaStore = create<ColetaState>()(
       values: {},
       prompt: "",
       history: [],
+      discarded: [],
 
       setStep: (s) => set({ step: s }),
       setContexto: (patch) => set({ contexto: { ...get().contexto, ...patch } }),
       setTextoOriginal: (t) => set({ textoOriginal: t }),
 
       processarTexto: () => {
-        const fields = parseOpenEvidence(get().textoOriginal);
-        // Sempre garantir bloco de vitais
+        const { fields, discarded } = parseOpenEvidence(get().textoOriginal);
         const hasVitais = fields.some((f) => f.secao === "vitais");
         const all = hasVitais ? fields : [...fields, ...buildVitaisDefault()];
-        set({ fields: all, values: {}, step: 2 });
+        set({ fields: all, values: {}, step: 2, discarded });
       },
 
       reprocessar: () => {
-        const fields = parseOpenEvidence(get().textoOriginal);
+        const { fields, discarded } = parseOpenEvidence(get().textoOriginal);
         const hasVitais = fields.some((f) => f.secao === "vitais");
         const all = hasVitais ? fields : [...fields, ...buildVitaisDefault()];
-        // preserva valores cujos labels coincidem
         const oldValues = get().values;
         const oldFields = get().fields;
         const labelMap = new Map(oldFields.map((f) => [f.label.toLowerCase() + "|" + f.secao, oldValues[f.id]]));
@@ -73,7 +73,7 @@ export const useColetaStore = create<ColetaState>()(
           const v = labelMap.get(f.label.toLowerCase() + "|" + f.secao);
           if (v) newValues[f.id] = v;
         });
-        set({ fields: all, values: newValues });
+        set({ fields: all, values: newValues, discarded });
       },
 
       setValue: (id, patch) =>
