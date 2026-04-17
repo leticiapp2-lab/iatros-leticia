@@ -6,7 +6,6 @@ import { toast } from "sonner";
 export default function NewColetaButton() {
   const [open, setOpen] = useState(false);
   const novaColeta = useColetaStore((s) => s.novaColeta);
-  const salvarESnova = useColetaStore((s) => s.salvarESnova);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -25,12 +24,6 @@ export default function NewColetaButton() {
     novaColeta();
     setOpen(false);
     toast.success("Nova coleta iniciada.");
-  };
-
-  const handleSalvarENova = () => {
-    salvarESnova();
-    setOpen(false);
-    toast.success("Coleta atual salva no histórico. Nova coleta iniciada.");
   };
 
   return (
@@ -66,27 +59,19 @@ export default function NewColetaButton() {
             <p className="text-sm text-muted-foreground mb-5">
               Descartar a coleta atual e começar uma nova? Todos os dados preenchidos serão perdidos.
             </p>
-            <div className="flex flex-col gap-2">
+            <div className="flex gap-2">
               <button
-                onClick={handleSalvarENova}
-                className="w-full px-4 py-2.5 rounded-md bg-[#7B2FBE] text-white text-sm font-semibold hover:bg-[#6A28A6] transition-colors"
+                onClick={() => setOpen(false)}
+                className="flex-1 px-4 py-2.5 rounded-md border border-border text-sm font-semibold hover:bg-muted transition-colors"
               >
-                Salvar coleta atual e iniciar nova
+                Cancelar
               </button>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => setOpen(false)}
-                  className="flex-1 px-4 py-2.5 rounded-md border border-border text-sm font-semibold hover:bg-muted transition-colors"
-                >
-                  Cancelar
-                </button>
-                <button
-                  onClick={handleConfirm}
-                  className="flex-1 px-4 py-2.5 rounded-md bg-destructive text-destructive-foreground text-sm font-semibold hover:bg-destructive/90 transition-colors"
-                >
-                  Sim, começar do zero
-                </button>
-              </div>
+              <button
+                onClick={handleConfirm}
+                className="flex-1 px-4 py-2.5 rounded-md bg-destructive text-destructive-foreground text-sm font-semibold hover:bg-destructive/90 transition-colors"
+              >
+                Sim, começar do zero
+              </button>
             </div>
             <p className="text-[11px] text-muted-foreground mt-3 text-center">
               Atalho: Ctrl+Shift+N (Cmd+Shift+N no Mac)
