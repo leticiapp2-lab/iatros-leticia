@@ -1,11 +1,8 @@
-import { Link, useNavigate } from "react-router-dom";
-import { Send } from "lucide-react";
-import { useState } from "react";
+import { Link } from "react-router-dom";
 import logoIatros from "@/assets/logo-iatros.png";
 import mascot from "@/assets/mascot.png";
 
 const navButtons = [
-  { label: "Chat Auxiliar", href: "/chat" },
   { label: "Consulta Guiada", href: "/consulta" },
   { label: "Critérios Diagnósticos", href: "/criterios" },
   { label: "Fluxograma Diagnóstico", href: "/fluxogramas" },
@@ -14,14 +11,6 @@ const navButtons = [
 ];
 
 export default function HomePage() {
-  const [input, setInput] = useState("");
-  const navigate = useNavigate();
-
-  const handleSend = () => {
-    if (!input.trim()) return;
-    navigate("/chat", { state: { initialMessage: input.trim() } });
-  };
-
   return (
     <div className="min-h-screen flex flex-col bg-background" style={{ fontFamily: "'Francois One', sans-serif" }}>
       {/* Header with logo */}
@@ -53,42 +42,13 @@ export default function HomePage() {
             <img src={mascot} alt="Iatros - Auxiliar Clínico" className="w-full h-auto" />
           </div>
 
-          {/* Speech bubble + chat area */}
+          {/* Speech bubble */}
           <div className="flex-1 w-full">
-            {/* Speech bubble */}
             <div className="mb-8">
               <p className="text-foreground text-lg sm:text-xl leading-relaxed" style={{ fontFamily: "'Francois One', sans-serif" }}>
-                "Olá, meu nome é Iatros e serei seu Auxiliar Clínico! Podemos
-                nos falar pelo Chat ou posso te auxiliar a encontrar as Abas
-                Teóricas do site."
+                "Olá, meu nome é Iatros e serei seu Auxiliar Clínico! Posso te auxiliar a encontrar as Abas
+                Teóricas do site e guiar suas consultas com checklists baseados em evidências."
               </p>
-            </div>
-
-            {/* Chat input area */}
-            <div className="border-2 border-[#E8720C] rounded-xl bg-[#FFF5EB] p-4 sm:p-6 shadow-sm">
-              {/* Message display area */}
-              <div className="min-h-[240px] sm:min-h-[300px] mb-4 rounded-lg bg-card p-4">
-                {/* Empty chat area */}
-              </div>
-
-              {/* Input bar */}
-              <div className="flex items-center gap-3 border border-[#E8720C]/40 rounded-lg bg-card px-4 py-3">
-                <input
-                  type="text"
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleSend()}
-                  placeholder="Sexo, idade, queixa principal e tempo..."
-                  className="flex-1 bg-transparent outline-none text-foreground placeholder:text-muted-foreground text-base sm:text-lg"
-                  style={{ fontFamily: "'Francois One', sans-serif" }}
-                />
-                <button
-                  onClick={handleSend}
-                  className="text-[#E8720C] hover:text-[#D4841A] transition-colors p-2"
-                >
-                  <Send className="h-6 w-6" />
-                </button>
-              </div>
             </div>
           </div>
         </div>
