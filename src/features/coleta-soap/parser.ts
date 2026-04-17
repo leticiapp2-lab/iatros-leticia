@@ -1,4 +1,5 @@
 import type { FieldType, ParsedField, SectionId } from "./types";
+import { toAffirmativeLabel } from "./labelUtils";
 
 let _id = 0;
 const nextId = () => `f_${Date.now().toString(36)}_${(_id++).toString(36)}`;
@@ -389,7 +390,9 @@ export function parseOpenEvidence(rawText: string): ParseResult {
       continue;
     }
 
-    const finalLabel = cls.labelOverride ?? label;
+    // Normaliza label para forma afirmativa (remove "?", converte 2ª pessoa → 3ª pessoa)
+    // Não aplica em labels canônicos (overrides) como "PA", "EVA (dor)"
+    const finalLabel = cls.labelOverride ?? toAffirmativeLabel(label);
     const finalNorm = finalLabel.toLowerCase().replace(/[^a-z0-9çáéíóúâêôãõ ]/gi, "").replace(/\s+/g, " ").trim();
     if (seenLabels.has(finalNorm)) { discarded.push(original); continue; }
 
