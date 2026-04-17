@@ -115,6 +115,7 @@ export const useColetaStore = create<ColetaState>()(
           fields: [],
           values: {},
           prompt: "",
+          discarded: [],
         }),
 
       loadHistory: (id) => {
@@ -140,6 +141,7 @@ export const useColetaStore = create<ColetaState>()(
         values: s.values,
         prompt: s.prompt,
         history: s.history,
+        discarded: s.discarded,
       }),
     },
   ),
