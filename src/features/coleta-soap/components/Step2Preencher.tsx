@@ -1,6 +1,6 @@
-import { useMemo, useState } from "react";
-import { ChevronDown, Plus, Eraser, RefreshCw, FileText, Columns2, X, AlertTriangle, Eye } from "lucide-react";
-import { useColetaStore, useProgresso } from "@/features/coleta-soap/store";
+import { useEffect, useMemo, useState } from "react";
+import { ChevronDown, Plus, Eraser, RefreshCw, FileText, Columns2, X, AlertTriangle, Eye, Check, CircleSlash } from "lucide-react";
+import { useColetaStore, useProgressoDetalhado } from "@/features/coleta-soap/store";
 import { SECTION_META, type SectionId, type FieldType, type ParsedField } from "@/features/coleta-soap/types";
 import FieldRenderer from "./FieldRenderer";
 import { toast } from "sonner";
@@ -18,13 +18,17 @@ const ALL_SECTIONS = Object.entries(SECTION_META)
   .map(([id, meta]) => ({ id: id as SectionId, ...meta }))
   .sort((a, b) => a.order - b.order);
 
+const TUTORIAL_KEY = "clinicalCompass.tutorialVisto";
+
 export default function Step2Preencher() {
   const {
     fields, values, setValue, addManualField, removeField,
     limpar, gerarPrompt, contexto, textoOriginal, setTextoOriginal, reprocessar,
+    setSectionChecked, clearSection,
   } = useColetaStore();
   const discarded = useColetaStore((s) => s.discarded);
-  const progresso = useProgresso();
+  const lastSavedAt = useColetaStore((s) => s.lastSavedAt);
+  const det = useProgressoDetalhado();
 
   const [openSection, setOpenSection] = useState<Record<SectionId, boolean>>(() => {
     const initial: Record<string, boolean> = {};
@@ -34,6 +38,33 @@ export default function Step2Preencher() {
   const [twoPanel, setTwoPanel] = useState(false);
   const [showAdd, setShowAdd] = useState(false);
   const [showDiscarded, setShowDiscarded] = useState(false);
+  const [tutorialVisto, setTutorialVisto] = useState(true);
+  const [savedAgo, setSavedAgo] = useState("agora");
+
+  useEffect(() => {
+    try {
+      const seen = localStorage.getItem(TUTORIAL_KEY);
+      if (!seen) {
+        setTutorialVisto(false);
+        localStorage.setItem(TUTORIAL_KEY, "1");
+      }
+    } catch {}
+  }, []);
+
+  // atualiza "salvo há X" a cada 5s
+  useEffect(() => {
+    const update = () => {
+      if (!lastSavedAt) return setSavedAgo("—");
+      const s = Math.floor((Date.now() - lastSavedAt) / 1000);
+      if (s < 5) setSavedAgo("agora");
+      else if (s < 60) setSavedAgo(`há ${s}s`);
+      else if (s < 3600) setSavedAgo(`há ${Math.floor(s / 60)}min`);
+      else setSavedAgo(`há ${Math.floor(s / 3600)}h`);
+    };
+    update();
+    const t = setInterval(update, 5000);
+    return () => clearInterval(t);
+  }, [lastSavedAt]);
 
   const grouped = useMemo(() => {
     const map: Record<SectionId, ParsedField[]> = {} as never;
@@ -64,6 +95,38 @@ export default function Step2Preencher() {
     gerarPrompt();
   };
 
+  // contagens por seção
+  const sectionCounts = (secao: SectionId) => {
+    const items = grouped[secao] ?? [];
+    let pres = 0, aus = 0, np = 0;
+    items.forEach((f) => {
+      const v = values[f.id];
+      if (f.tipo === "checkbox") {
+        if (v?.checked === true) pres++;
+        else if (v?.checked === false) aus++;
+        else np++;
+      } else if (f.tipo === "radio") {
+        if (v?.selected === "Positivo") pres++;
+        else if (v?.selected === "Negativo") aus++;
+        else np++;
+      } else {
+        if (v?.value?.trim()) pres++;
+        else np++;
+      }
+    });
+    return { pres, aus, np };
+  };
+
+  // Achar a primeira seção com checkbox para mostrar o tutorial
+  const firstCheckboxFieldId = useMemo(() => {
+    for (const s of ALL_SECTIONS) {
+      const items = grouped[s.id] ?? [];
+      const first = items.find((f) => f.tipo === "checkbox");
+      if (first) return first.id;
+    }
+    return null;
+  }, [grouped]);
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-6">
       {/* Conteúdo principal */}
@@ -92,6 +155,23 @@ export default function Step2Preencher() {
         )}
 
         <div className={cn("space-y-3", twoPanel && "lg:order-2")}>
+          {/* Barra de progresso rica */}
+          <div className="border border-border rounded-xl bg-card p-3 flex items-center gap-4 flex-wrap">
+            <div className="flex-1 min-w-[200px]">
+              <div className="flex items-baseline justify-between mb-1">
+                <span className="text-sm font-semibold text-foreground">
+                  {det.filled} de {det.total} campos respondidos ({det.pct}%)
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  {det.secoesCompletas} de {totalSecoes} seções completas
+                </span>
+              </div>
+              <div className="h-2 bg-muted rounded-full overflow-hidden">
+                <div className="h-full bg-[#7B2FBE] transition-all" style={{ width: `${det.pct}%` }} />
+              </div>
+            </div>
+          </div>
+
           {fields.length > 80 && (
             <div className="flex items-start gap-3 border border-yellow-500/40 bg-yellow-500/10 rounded-xl p-3">
               <AlertTriangle className="h-5 w-5 text-yellow-600 shrink-0 mt-0.5" />
@@ -118,30 +198,68 @@ export default function Step2Preencher() {
             const items = grouped[s.id] ?? [];
             if (!items.length) return null;
             const open = openSection[s.id];
+            const counts = sectionCounts(s.id);
+            const filledHere = (det.sectionsFilled.get(s.id) ?? 0);
+            const totalHere = (det.sectionsTotal.get(s.id) ?? 0);
+            const hasCheckbox = items.some((f) => f.tipo === "checkbox");
             return (
               <div key={s.id} className="border border-border rounded-xl bg-card overflow-hidden">
                 <button
                   onClick={() => setOpenSection((p) => ({ ...p, [s.id]: !p[s.id] }))}
                   className="w-full flex items-center justify-between px-4 py-3 bg-[#7B2FBE]/5 hover:bg-[#7B2FBE]/10 transition-colors"
                 >
-                  <span className="font-semibold text-foreground text-sm sm:text-base">
-                    {s.title}{" "}
-                    <span className="text-xs text-muted-foreground font-normal">({items.length})</span>
+                  <span className="font-semibold text-foreground text-sm sm:text-base flex items-center gap-2">
+                    {s.title}
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-card border border-border text-muted-foreground font-normal">
+                      {filledHere}/{totalHere}
+                    </span>
                   </span>
-                  <ChevronDown
-                    className={cn("h-4 w-4 text-muted-foreground transition-transform", open && "rotate-180")}
-                  />
+                  <div className="flex items-center gap-3 text-xs">
+                    <span className="hidden sm:inline text-muted-foreground">
+                      <span className="text-emerald-700 font-semibold">{counts.pres}</span> presentes ·{" "}
+                      <span className="text-red-700 font-semibold">{counts.aus}</span> ausentes ·{" "}
+                      <span>{counts.np}</span> não pesquisados
+                    </span>
+                    <ChevronDown
+                      className={cn("h-4 w-4 text-muted-foreground transition-transform", open && "rotate-180")}
+                    />
+                  </div>
                 </button>
                 {open && (
                   <div className="p-3 space-y-2">
-                    {items.map((f, idx) => (
+                    {hasCheckbox && (
+                      <div className="flex items-center gap-2 flex-wrap pb-2 border-b border-border">
+                        <button
+                          onClick={() => setSectionChecked(s.id, false)}
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-border bg-card text-xs font-semibold text-red-700 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
+                        >
+                          <CircleSlash className="h-3 w-3" />
+                          Marcar todos como Ausentes
+                        </button>
+                        <button
+                          onClick={() => setSectionChecked(s.id, true)}
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-border bg-card text-xs font-semibold text-emerald-700 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 transition-colors"
+                        >
+                          <Check className="h-3 w-3" />
+                          Marcar todos como Presentes
+                        </button>
+                        <button
+                          onClick={() => clearSection(s.id)}
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-border bg-card text-xs font-semibold text-muted-foreground hover:bg-muted transition-colors"
+                        >
+                          <Eraser className="h-3 w-3" />
+                          Limpar seção
+                        </button>
+                      </div>
+                    )}
+                    {items.map((f) => (
                       <FieldRenderer
                         key={f.id}
                         field={f}
                         value={values[f.id]}
                         onChange={(patch) => setValue(f.id, patch)}
                         onRemove={() => removeField(f.id)}
-                        showLegend={idx === 0 && f.tipo === "checkbox"}
+                        tutorial={!tutorialVisto && f.id === firstCheckboxFieldId}
                       />
                     ))}
                   </div>
@@ -173,12 +291,12 @@ export default function Step2Preencher() {
           <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">
             Progresso
           </p>
-          <div className="text-2xl font-bold text-[#7B2FBE]">{progresso}%</div>
+          <div className="text-2xl font-bold text-[#7B2FBE]">{det.pct}%</div>
           <div className="mt-2 h-2 bg-muted rounded-full overflow-hidden">
-            <div className="h-full bg-[#7B2FBE] transition-all" style={{ width: `${progresso}%` }} />
+            <div className="h-full bg-[#7B2FBE] transition-all" style={{ width: `${det.pct}%` }} />
           </div>
           <p className="text-xs text-muted-foreground mt-2">
-            {fields.length} campos em {totalSecoes} seções
+            {det.filled}/{det.total} campos · {det.secoesCompletas}/{totalSecoes} seções
           </p>
         </div>
 
@@ -234,6 +352,12 @@ export default function Step2Preencher() {
       {showDiscarded && (
         <DiscardedModal items={discarded} onClose={() => setShowDiscarded(false)} />
       )}
+
+      {/* Auto-save indicator */}
+      <div className="fixed bottom-4 right-4 z-40 bg-card border border-border rounded-full shadow-md px-3 py-1.5 text-xs text-muted-foreground flex items-center gap-1.5">
+        <Check className="h-3 w-3 text-emerald-600" />
+        Salvo {savedAgo}
+      </div>
     </div>
   );
 }

@@ -7,6 +7,7 @@ import Step1Importar from "@/features/coleta-soap/components/Step1Importar";
 import Step2Preencher from "@/features/coleta-soap/components/Step2Preencher";
 import Step3Prompt from "@/features/coleta-soap/components/Step3Prompt";
 import HistoryPanel from "@/features/coleta-soap/components/HistoryPanel";
+import NewColetaButton from "@/features/coleta-soap/components/NewColetaButton";
 
 const navButtons = [
   { label: "Coleta SOAP", href: "/coleta-soap" },
@@ -62,7 +63,10 @@ export default function ColetaSoapPage() {
             <ArrowLeft className="h-4 w-4" />
             <span className="text-sm">Voltar ao início</span>
           </Link>
-          <HistoryPanel />
+          <div className="flex items-center gap-2 flex-wrap">
+            <HistoryPanel />
+            <NewColetaButton />
+          </div>
         </div>
 
         <div className="border border-border rounded-2xl bg-card p-5 sm:p-6 mb-6 shadow-sm">
