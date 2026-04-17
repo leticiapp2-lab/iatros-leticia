@@ -23,6 +23,7 @@ export default function Step2Preencher() {
     fields, values, setValue, addManualField, removeField,
     limpar, gerarPrompt, contexto, textoOriginal, setTextoOriginal, reprocessar,
   } = useColetaStore();
+  const discarded = useColetaStore((s) => s.discarded);
   const progresso = useProgresso();
 
   const [openSection, setOpenSection] = useState<Record<SectionId, boolean>>(() => {
@@ -32,12 +33,16 @@ export default function Step2Preencher() {
   });
   const [twoPanel, setTwoPanel] = useState(false);
   const [showAdd, setShowAdd] = useState(false);
+  const [showDiscarded, setShowDiscarded] = useState(false);
 
   const grouped = useMemo(() => {
-    const map: Record<SectionId, typeof fields> = {} as never;
+    const map: Record<SectionId, ParsedField[]> = {} as never;
     ALL_SECTIONS.forEach((s) => (map[s.id] = []));
     fields.forEach((f) => {
       (map[f.secao] ??= []).push(f);
+    });
+    Object.keys(map).forEach((k) => {
+      map[k as SectionId].sort((a, b) => TYPE_ORDER[a.tipo] - TYPE_ORDER[b.tipo]);
     });
     return map;
   }, [fields]);
