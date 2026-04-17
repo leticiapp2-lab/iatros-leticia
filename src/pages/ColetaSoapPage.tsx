@@ -69,7 +69,7 @@ export default function ColetaSoapPage() {
           <ColetaStepper step={step} onStepClick={setStep} />
         </div>
 
-        <div className="animate-fade-in" key={step}>
+        <div key={step}>
           {step === 1 && <Step1Importar />}
           {step === 2 && <Step2Preencher />}
           {step === 3 && <Step3Prompt />}
