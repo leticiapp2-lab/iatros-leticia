@@ -3,6 +3,7 @@ import { ArrowLeft } from "lucide-react";
 import logoIatros from "@/assets/logo-iatros.png";
 
 const navButtons = [
+  { label: "Coleta SOAP", href: "/coleta-soap" },
   { label: "Consulta Guiada", href: "/consulta" },
   { label: "Critérios Diagnósticos", href: "/criterios" },
   { label: "Fluxograma Diagnóstico", href: "/fluxogramas" },
