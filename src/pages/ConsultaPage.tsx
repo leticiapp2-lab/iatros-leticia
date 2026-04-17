@@ -1,25 +1,16 @@
 import { Link } from "react-router-dom";
-import { ArrowLeft, RotateCcw } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import logoIatros from "@/assets/logo-iatros.png";
-import { ConsultaProvider, useConsulta } from "@/components/consulta/ConsultaProvider";
-import StepIndicator from "@/components/consulta/StepIndicator";
-import EntradaStep from "@/components/consulta/EntradaStep";
-import SubjetivoStep from "@/components/consulta/SubjetivoStep";
-import ObjetivoStep from "@/components/consulta/ObjetivoStep";
-import AvaliacaoStep from "@/components/consulta/AvaliacaoStep";
-import PlanoStep from "@/components/consulta/PlanoStep";
 
 const navButtons = [
-  { label: "Chat Auxiliar", href: "/chat" },
   { label: "Consulta Guiada", href: "/consulta" },
   { label: "Critérios Diagnósticos", href: "/criterios" },
+  { label: "Fluxograma Diagnóstico", href: "/fluxogramas" },
   { label: "Calculadoras clínicas", href: "/calculadoras" },
   { label: "PDF editáveis", href: "/pdf" },
 ];
 
-function ConsultaContent() {
-  const { state, goToStep, reset } = useConsulta();
-
+export default function ConsultaPage() {
   return (
     <div
       className="min-h-screen flex flex-col bg-background"
@@ -55,49 +46,24 @@ function ConsultaContent() {
       </nav>
 
       {/* Main */}
-      <main className="flex-1 flex flex-col max-w-4xl w-full mx-auto px-4 py-6">
-        {/* Back + reset */}
-        <div className="flex items-center justify-between mb-4">
-          <Link
-            to="/"
-            className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            <span className="text-sm">Voltar ao início</span>
-          </Link>
-          {state.currentStep !== "entrada" && (
-            <button
-              onClick={reset}
-              className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
-            >
-              <RotateCcw className="h-4 w-4" />
-              Nova consulta
-            </button>
-          )}
-        </div>
+      <main className="flex-1 flex flex-col max-w-4xl w-full mx-auto px-4 py-10">
+        <Link
+          to="/"
+          className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-6"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          <span className="text-sm">Voltar ao início</span>
+        </Link>
 
-        {/* Step indicator */}
-        <StepIndicator currentStep={state.currentStep} onStepClick={goToStep} />
-
-        {/* Step content with transition */}
-        <div className="mt-6" key={state.currentStep}>
-          <div className="animate-fade-in">
-            {state.currentStep === "entrada" && <EntradaStep />}
-            {state.currentStep === "subjetivo" && <SubjetivoStep />}
-            {state.currentStep === "objetivo" && <ObjetivoStep />}
-            {state.currentStep === "avaliacao" && <AvaliacaoStep />}
-            {state.currentStep === "plano" && <PlanoStep />}
-          </div>
+        <div className="border border-border rounded-2xl bg-card p-10 text-center shadow-sm">
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-3">
+            Consulta Guiada
+          </h1>
+          <p className="text-muted-foreground text-base sm:text-lg">
+            Esta seção será reconstruída em breve.
+          </p>
         </div>
       </main>
     </div>
-  );
-}
-
-export default function ConsultaPage() {
-  return (
-    <ConsultaProvider>
-      <ConsultaContent />
-    </ConsultaProvider>
   );
 }
