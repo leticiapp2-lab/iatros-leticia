@@ -230,6 +230,10 @@ export default function Step2Preencher() {
           }}
         />
       )}
+
+      {showDiscarded && (
+        <DiscardedModal items={discarded} onClose={() => setShowDiscarded(false)} />
+      )}
     </div>
   );
 }
@@ -317,6 +321,44 @@ function AddFieldModal({
             className="px-4 py-2 rounded-md bg-[#7B2FBE] text-white text-sm font-semibold hover:bg-[#6A28A6] disabled:opacity-50"
           >
             Adicionar
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function DiscardedModal({ items, onClose }: { items: string[]; onClose: () => void }) {
+  return (
+    <div className="fixed inset-0 z-50 bg-foreground/40 grid place-items-center px-4">
+      <div className="bg-card border border-border rounded-2xl p-6 max-w-2xl w-full max-h-[80vh] flex flex-col shadow-xl">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h3 className="font-bold text-lg text-foreground">Itens descartados pelo parser</h3>
+            <p className="text-xs text-muted-foreground">
+              {items.length} linhas filtradas (referências, tabelas, explicações ou linhas curtas demais).
+              Use "Adicionar item manual" para recuperar algum.
+            </p>
+          </div>
+          <button onClick={onClose} className="text-muted-foreground hover:text-foreground">
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+        <div className="overflow-y-auto flex-1 border border-border rounded-md bg-background">
+          <ul className="divide-y divide-border">
+            {items.map((it, i) => (
+              <li key={i} className="px-3 py-2 text-xs font-mono text-muted-foreground break-words">
+                {it}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="flex justify-end mt-4">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 rounded-md bg-[#7B2FBE] text-white text-sm font-semibold hover:bg-[#6A28A6]"
+          >
+            Fechar
           </button>
         </div>
       </div>
