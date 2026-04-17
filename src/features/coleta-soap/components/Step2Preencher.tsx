@@ -1,10 +1,18 @@
 import { useMemo, useState } from "react";
-import { ChevronDown, Plus, Eraser, RefreshCw, FileText, Columns2, X } from "lucide-react";
+import { ChevronDown, Plus, Eraser, RefreshCw, FileText, Columns2, X, AlertTriangle, Eye } from "lucide-react";
 import { useColetaStore, useProgresso } from "@/features/coleta-soap/store";
-import { SECTION_META, type SectionId, type FieldType } from "@/features/coleta-soap/types";
+import { SECTION_META, type SectionId, type FieldType, type ParsedField } from "@/features/coleta-soap/types";
 import FieldRenderer from "./FieldRenderer";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+
+const TYPE_ORDER: Record<ParsedField["tipo"], number> = {
+  checkbox: 0,
+  radio: 1,
+  number: 2,
+  text: 3,
+  textarea: 4,
+};
 
 const ALL_SECTIONS = Object.entries(SECTION_META)
   .map(([id, meta]) => ({ id: id as SectionId, ...meta }))
