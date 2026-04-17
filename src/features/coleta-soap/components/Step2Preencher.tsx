@@ -1,10 +1,18 @@
 import { useMemo, useState } from "react";
-import { ChevronDown, Plus, Eraser, RefreshCw, FileText, Columns2, X } from "lucide-react";
+import { ChevronDown, Plus, Eraser, RefreshCw, FileText, Columns2, X, AlertTriangle, Eye } from "lucide-react";
 import { useColetaStore, useProgresso } from "@/features/coleta-soap/store";
-import { SECTION_META, type SectionId, type FieldType } from "@/features/coleta-soap/types";
+import { SECTION_META, type SectionId, type FieldType, type ParsedField } from "@/features/coleta-soap/types";
 import FieldRenderer from "./FieldRenderer";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+
+const TYPE_ORDER: Record<ParsedField["tipo"], number> = {
+  checkbox: 0,
+  radio: 1,
+  number: 2,
+  text: 3,
+  textarea: 4,
+};
 
 const ALL_SECTIONS = Object.entries(SECTION_META)
   .map(([id, meta]) => ({ id: id as SectionId, ...meta }))
@@ -15,6 +23,7 @@ export default function Step2Preencher() {
     fields, values, setValue, addManualField, removeField,
     limpar, gerarPrompt, contexto, textoOriginal, setTextoOriginal, reprocessar,
   } = useColetaStore();
+  const discarded = useColetaStore((s) => s.discarded);
   const progresso = useProgresso();
 
   const [openSection, setOpenSection] = useState<Record<SectionId, boolean>>(() => {
@@ -24,12 +33,16 @@ export default function Step2Preencher() {
   });
   const [twoPanel, setTwoPanel] = useState(false);
   const [showAdd, setShowAdd] = useState(false);
+  const [showDiscarded, setShowDiscarded] = useState(false);
 
   const grouped = useMemo(() => {
-    const map: Record<SectionId, typeof fields> = {} as never;
+    const map: Record<SectionId, ParsedField[]> = {} as never;
     ALL_SECTIONS.forEach((s) => (map[s.id] = []));
     fields.forEach((f) => {
       (map[f.secao] ??= []).push(f);
+    });
+    Object.keys(map).forEach((k) => {
+      map[k as SectionId].sort((a, b) => TYPE_ORDER[a.tipo] - TYPE_ORDER[b.tipo]);
     });
     return map;
   }, [fields]);
@@ -79,6 +92,28 @@ export default function Step2Preencher() {
         )}
 
         <div className={cn("space-y-3", twoPanel && "lg:order-2")}>
+          {fields.length > 80 && (
+            <div className="flex items-start gap-3 border border-yellow-500/40 bg-yellow-500/10 rounded-xl p-3">
+              <AlertTriangle className="h-5 w-5 text-yellow-600 shrink-0 mt-0.5" />
+              <div className="flex-1 text-xs sm:text-sm text-foreground">
+                <p className="font-semibold mb-0.5">O parser detectou {fields.length} campos.</p>
+                <p className="text-muted-foreground">
+                  Recomendamos revisar o texto colado — talvez haja tabelas ou referências que precisem ser removidas manualmente.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {discarded.length > 0 && (
+            <button
+              onClick={() => setShowDiscarded(true)}
+              className="flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <Eye className="h-3.5 w-3.5" />
+              Ver itens descartados ({discarded.length})
+            </button>
+          )}
+
           {ALL_SECTIONS.map((s) => {
             const items = grouped[s.id] ?? [];
             if (!items.length) return null;
@@ -99,13 +134,14 @@ export default function Step2Preencher() {
                 </button>
                 {open && (
                   <div className="p-3 space-y-2">
-                    {items.map((f) => (
+                    {items.map((f, idx) => (
                       <FieldRenderer
                         key={f.id}
                         field={f}
                         value={values[f.id]}
                         onChange={(patch) => setValue(f.id, patch)}
                         onRemove={() => removeField(f.id)}
+                        showLegend={idx === 0 && f.tipo === "checkbox"}
                       />
                     ))}
                   </div>
@@ -194,6 +230,10 @@ export default function Step2Preencher() {
           }}
         />
       )}
+
+      {showDiscarded && (
+        <DiscardedModal items={discarded} onClose={() => setShowDiscarded(false)} />
+      )}
     </div>
   );
 }
@@ -281,6 +321,44 @@ function AddFieldModal({
             className="px-4 py-2 rounded-md bg-[#7B2FBE] text-white text-sm font-semibold hover:bg-[#6A28A6] disabled:opacity-50"
           >
             Adicionar
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function DiscardedModal({ items, onClose }: { items: string[]; onClose: () => void }) {
+  return (
+    <div className="fixed inset-0 z-50 bg-foreground/40 grid place-items-center px-4">
+      <div className="bg-card border border-border rounded-2xl p-6 max-w-2xl w-full max-h-[80vh] flex flex-col shadow-xl">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h3 className="font-bold text-lg text-foreground">Itens descartados pelo parser</h3>
+            <p className="text-xs text-muted-foreground">
+              {items.length} linhas filtradas (referências, tabelas, explicações ou linhas curtas demais).
+              Use "Adicionar item manual" para recuperar algum.
+            </p>
+          </div>
+          <button onClick={onClose} className="text-muted-foreground hover:text-foreground">
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+        <div className="overflow-y-auto flex-1 border border-border rounded-md bg-background">
+          <ul className="divide-y divide-border">
+            {items.map((it, i) => (
+              <li key={i} className="px-3 py-2 text-xs font-mono text-muted-foreground break-words">
+                {it}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="flex justify-end mt-4">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 rounded-md bg-[#7B2FBE] text-white text-sm font-semibold hover:bg-[#6A28A6]"
+          >
+            Fechar
           </button>
         </div>
       </div>
