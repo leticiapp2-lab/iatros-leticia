@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { ColetaSnapshot, ContextoClinico, FieldValue, ParsedField, SectionId } from "./types";
+import type { ContextoClinico, FieldValue, ParsedField, SectionId } from "./types";
 import { buildVitaisDefault, makeManualField, parseOpenEvidence } from "./parser";
 import { buildSoapPrompt } from "./promptBuilder";
 
@@ -13,7 +13,6 @@ interface ColetaState {
   fields: ParsedField[];
   values: Record<string, FieldValue>;
   prompt: string;
-  history: ColetaSnapshot[];
   discarded: string[];
   lastSavedAt: number;
 
@@ -30,8 +29,6 @@ interface ColetaState {
   limpar: () => void;
   gerarPrompt: () => string;
   novaColeta: () => void;
-  salvarESnova: () => void;
-  loadHistory: (id: string) => void;
 }
 
 const emptyContexto: ContextoClinico = {
@@ -44,18 +41,6 @@ const emptyContexto: ContextoClinico = {
 
 const PERSIST_KEY = "clinicalCompass.coletaAtual";
 
-function snapshotFrom(state: Pick<ColetaState, "contexto" | "textoOriginal" | "fields" | "values" | "prompt">): ColetaSnapshot {
-  return {
-    id: `c_${Date.now().toString(36)}`,
-    createdAt: Date.now(),
-    contexto: state.contexto,
-    textoOriginal: state.textoOriginal,
-    fields: state.fields,
-    values: state.values,
-    prompt: state.prompt,
-  };
-}
-
 export const useColetaStore = create<ColetaState>()(
   persist(
     (set, get) => ({
@@ -65,7 +50,6 @@ export const useColetaStore = create<ColetaState>()(
       fields: [],
       values: {},
       prompt: "",
-      history: [],
       discarded: [],
       lastSavedAt: 0,
 
@@ -136,33 +120,13 @@ export const useColetaStore = create<ColetaState>()(
       gerarPrompt: () => {
         const { contexto, fields, values } = get();
         const prompt = buildSoapPrompt({ contexto, fields, values });
-        const snap = snapshotFrom({ ...get(), prompt });
-        const history = [snap, ...get().history].slice(0, 10);
-        set({ prompt, step: 3, history, lastSavedAt: Date.now() });
+        set({ prompt, step: 3, lastSavedAt: Date.now() });
         return prompt;
       },
 
       novaColeta: () => {
         try {
-          // Apaga state persistido para garantir reset completo
-          const raw = localStorage.getItem(PERSIST_KEY);
-          if (raw) {
-            const parsed = JSON.parse(raw);
-            // preserva histórico
-            const preservedHistory = parsed?.state?.history ?? get().history;
-            set({
-              step: 1,
-              contexto: emptyContexto,
-              textoOriginal: "",
-              fields: [],
-              values: {},
-              prompt: "",
-              discarded: [],
-              history: preservedHistory,
-              lastSavedAt: Date.now(),
-            });
-            return;
-          }
+          localStorage.removeItem(PERSIST_KEY);
         } catch {
           // ignore
         }
@@ -177,42 +141,6 @@ export const useColetaStore = create<ColetaState>()(
           lastSavedAt: Date.now(),
         });
       },
-
-      salvarESnova: () => {
-        const { contexto, fields, values, textoOriginal, prompt, history } = get();
-        // só salva se houver algum dado significativo
-        const hasData = textoOriginal.trim() || fields.length || contexto.queixaPrincipal.trim();
-        let nextHistory = history;
-        if (hasData) {
-          const snap = snapshotFrom({ contexto, textoOriginal, fields, values, prompt });
-          nextHistory = [snap, ...history].slice(0, 10);
-        }
-        set({
-          step: 1,
-          contexto: emptyContexto,
-          textoOriginal: "",
-          fields: [],
-          values: {},
-          prompt: "",
-          discarded: [],
-          history: nextHistory,
-          lastSavedAt: Date.now(),
-        });
-      },
-
-      loadHistory: (id) => {
-        const snap = get().history.find((s) => s.id === id);
-        if (!snap) return;
-        set({
-          step: 3,
-          contexto: snap.contexto,
-          textoOriginal: snap.textoOriginal,
-          fields: snap.fields,
-          values: snap.values,
-          prompt: snap.prompt ?? buildSoapPrompt({ contexto: snap.contexto, fields: snap.fields, values: snap.values }),
-          lastSavedAt: Date.now(),
-        });
-      },
     }),
     {
       name: PERSIST_KEY,
@@ -223,7 +151,6 @@ export const useColetaStore = create<ColetaState>()(
         fields: s.fields,
         values: s.values,
         prompt: s.prompt,
-        history: s.history,
         discarded: s.discarded,
       }),
     },
