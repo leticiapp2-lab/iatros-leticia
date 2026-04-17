@@ -1,4 +1,5 @@
 import type { ContextoClinico, FieldValue, ParsedField, SectionId } from "./types";
+import { affirmativeSentence, capitalize, negationItem, sanitize } from "./labelUtils";
 
 interface Args {
   contexto: ContextoClinico;
@@ -6,34 +7,50 @@ interface Args {
   values: Record<string, FieldValue>;
 }
 
-function fieldText(f: ParsedField, v?: FieldValue): string | null {
-  if (!v) return null;
-  if (f.tipo === "checkbox") {
-    if (v.checked === true) return f.label + (v.obs ? ` (${v.obs})` : "");
-    return null;
-  }
-  if (f.tipo === "radio") {
-    if (!v.selected || v.selected === "Não realizado") return null;
-    return `${f.label}: ${v.selected}${v.obs ? ` (${v.obs})` : ""}`;
-  }
-  if ((f.tipo === "text" || f.tipo === "number" || f.tipo === "textarea") && v.value?.trim()) {
-    const unit = f.unidade ? ` ${f.unidade}` : "";
-    return `${f.label}: ${v.value.trim()}${unit}${v.obs ? ` (${v.obs})` : ""}`;
-  }
-  return null;
+/** Gera frases assertivas para checkboxes de uma seção */
+function checkboxesAsProse(
+  fields: ParsedField[],
+  values: Record<string, FieldValue>,
+  secao: SectionId,
+): { positivos: string[]; negativos: string[] } {
+  const positivos: string[] = [];
+  const negativos: string[] = [];
+  fields
+    .filter((f) => f.secao === secao && f.tipo === "checkbox")
+    .forEach((f) => {
+      const v = values[f.id];
+      if (!v) return;
+      if (v.checked === true) {
+        const txt = affirmativeSentence(f.label, true) + (v.obs ? ` (${sanitize(v.obs)})` : "");
+        positivos.push(txt);
+      } else if (v.checked === false) {
+        negativos.push(negationItem(f.label));
+      }
+    });
+  return { positivos, negativos };
 }
 
-function negativos(fields: ParsedField[], values: Record<string, FieldValue>, secao: SectionId): string[] {
-  return fields
-    .filter((f) => f.secao === secao && f.tipo === "checkbox" && values[f.id]?.checked === false && values[f.id]?.obs)
-    .map((f) => f.label);
-}
-
-function sectionLines(fields: ParsedField[], values: Record<string, FieldValue>, secao: SectionId): string[] {
-  return fields
-    .filter((f) => f.secao === secao)
-    .map((f) => fieldText(f, values[f.id]))
-    .filter((s): s is string => Boolean(s));
+/** Outros tipos (radio/text/number/textarea) como linhas */
+function otherFieldsAsLines(
+  fields: ParsedField[],
+  values: Record<string, FieldValue>,
+  secao: SectionId,
+): string[] {
+  const out: string[] = [];
+  fields
+    .filter((f) => f.secao === secao && f.tipo !== "checkbox")
+    .forEach((f) => {
+      const v = values[f.id];
+      if (!v) return;
+      if (f.tipo === "radio") {
+        if (!v.selected || v.selected === "Não realizado") return;
+        out.push(`${sanitize(f.label)}: ${v.selected}${v.obs ? ` (${sanitize(v.obs)})` : ""}`);
+      } else if (v.value?.trim()) {
+        const unit = f.unidade && f.unidade !== "0–10" ? ` ${f.unidade}` : "";
+        out.push(`${sanitize(f.label)}: ${v.value.trim()}${unit}${v.obs ? ` (${sanitize(v.obs)})` : ""}`);
+      }
+    });
+  return out;
 }
 
 function vitaisLine(fields: ParsedField[], values: Record<string, FieldValue>): string | null {
@@ -47,11 +64,24 @@ function vitaisLine(fields: ParsedField[], values: Record<string, FieldValue>): 
   order.forEach((k) => {
     if (map[k]) parts.push(`${k} ${map[k]}`);
   });
-  // include any other vitals not in standard list
   Object.entries(map).forEach(([k, val]) => {
     if (!order.includes(k)) parts.push(`${k} ${val}`);
   });
   return parts.length ? parts.join(", ") : null;
+}
+
+/** Concatena lista de frases em prosa fluida com vírgulas e ponto final */
+function prose(items: string[]): string {
+  if (!items.length) return "";
+  const cleaned = items.map((s) => sanitize(s)).filter(Boolean);
+  if (!cleaned.length) return "";
+  const joined = cleaned.join(", ");
+  return joined.charAt(0).toUpperCase() + joined.slice(1) + ".";
+}
+
+function negacoes(neg: string[]): string {
+  if (neg.length < 2) return ""; // só inclui se houver 2+
+  return "Nega: " + neg.map(sanitize).join(", ") + ".";
 }
 
 export function buildSoapPrompt({ contexto, fields, values }: Args): string {
@@ -65,68 +95,89 @@ export function buildSoapPrompt({ contexto, fields, values }: Args): string {
     contexto.sexo,
     contexto.ocupacao,
     contexto.contexto && `atendimento em ${contexto.contexto}`,
-  ].filter(Boolean);
-  out.push(ctxBits.join(", ") + ".");
+  ].filter(Boolean) as string[];
+  out.push(capitalize(ctxBits.join(", ")));
   out.push("");
 
   out.push("SUBJETIVO (S):");
-  out.push(`Queixa principal: ${contexto.queixaPrincipal || "(não informada)"}`);
+  out.push(`Queixa principal: ${capitalize(contexto.queixaPrincipal || "(não informada)")}`);
 
-  const hdaLines = sectionLines(fields, values, "hda");
-  if (hdaLines.length) out.push(`História da doença atual: ${hdaLines.join(". ")}.`);
-
-  const sintomasPos = sectionLines(fields, values, "sintomas");
-  const sintomasNeg = negativos(fields, values, "sintomas");
-  if (sintomasPos.length || sintomasNeg.length) {
-    let line = "Sintomas associados: ";
-    line += sintomasPos.join(", ") || "—";
-    if (sintomasNeg.length) line += `. Nega: ${sintomasNeg.join(", ")}`;
-    out.push(line);
+  // HDA — prosa fluida
+  const hda = checkboxesAsProse(fields, values, "hda");
+  const hdaOutros = otherFieldsAsLines(fields, values, "hda");
+  const hdaTodosPos = [...hda.positivos, ...hdaOutros];
+  if (hdaTodosPos.length || hda.negativos.length >= 2) {
+    let line = "História da doença atual: ";
+    line += prose(hdaTodosPos) || "—";
+    const neg = negacoes(hda.negativos);
+    if (neg) line += " " + neg;
+    out.push(sanitize(line));
   }
 
-  const hmp = sectionLines(fields, values, "hmp");
-  if (hmp.length) out.push(`História médica pregressa: ${hmp.join("; ")}.`);
+  // Sintomas — prosa fluida
+  const sint = checkboxesAsProse(fields, values, "sintomas");
+  const sintOutros = otherFieldsAsLines(fields, values, "sintomas");
+  const sintPos = [...sint.positivos, ...sintOutros];
+  if (sintPos.length || sint.negativos.length >= 2) {
+    let line = "Sintomas associados: ";
+    line += prose(sintPos) || "—";
+    const neg = negacoes(sint.negativos);
+    if (neg) line += " " + neg;
+    out.push(sanitize(line));
+  }
 
-  const meds = sectionLines(fields, values, "medicacoes");
-  if (meds.length) out.push(`Medicações em uso: ${meds.join("; ")}.`);
+  // Revisão de Sistemas — prosa
+  const ros = checkboxesAsProse(fields, values, "revisao");
+  const rosOutros = otherFieldsAsLines(fields, values, "revisao");
+  const rosPos = [...ros.positivos, ...rosOutros];
+  if (rosPos.length || ros.negativos.length >= 2) {
+    let line = "Revisão de sistemas: ";
+    line += prose(rosPos) || "—";
+    const neg = negacoes(ros.negativos);
+    if (neg) line += " " + neg;
+    out.push(sanitize(line));
+  }
 
-  const al = sectionLines(fields, values, "alergias");
-  if (al.length) out.push(`Alergias: ${al.join("; ")}.`);
+  const hmpAll = [...checkboxesAsProse(fields, values, "hmp").positivos, ...otherFieldsAsLines(fields, values, "hmp")];
+  if (hmpAll.length) out.push(`História médica pregressa: ${prose(hmpAll)}`);
 
-  const fam = sectionLines(fields, values, "familiar");
-  if (fam.length) out.push(`História familiar: ${fam.join("; ")}.`);
+  const meds = [...checkboxesAsProse(fields, values, "medicacoes").positivos, ...otherFieldsAsLines(fields, values, "medicacoes")];
+  if (meds.length) out.push(`Medicações em uso: ${prose(meds)}`);
 
-  const soc = sectionLines(fields, values, "social");
-  if (soc.length) out.push(`História social: ${soc.join("; ")}.`);
+  const al = [...checkboxesAsProse(fields, values, "alergias").positivos, ...otherFieldsAsLines(fields, values, "alergias")];
+  if (al.length) out.push(`Alergias: ${prose(al)}`);
 
-  const ros = sectionLines(fields, values, "revisao");
-  if (ros.length) out.push(`Revisão de sistemas: ${ros.join("; ")}.`);
+  const fam = [...checkboxesAsProse(fields, values, "familiar").positivos, ...otherFieldsAsLines(fields, values, "familiar")];
+  if (fam.length) out.push(`História familiar: ${prose(fam)}`);
+
+  const soc = [...checkboxesAsProse(fields, values, "social").positivos, ...otherFieldsAsLines(fields, values, "social")];
+  if (soc.length) out.push(`História social: ${prose(soc)}`);
 
   out.push("");
   out.push("OBJETIVO (O):");
   const v = vitaisLine(fields, values);
-  if (v) out.push(`Sinais vitais: ${v}.`);
+  if (v) out.push(`Sinais vitais: ${sanitize(v)}.`);
 
-  const exame = sectionLines(fields, values, "exameFisico");
+  const exame = [...checkboxesAsProse(fields, values, "exameFisico").positivos, ...otherFieldsAsLines(fields, values, "exameFisico")];
   if (exame.length) {
     out.push("Exame físico:");
-    exame.forEach((l) => out.push(`- ${l}`));
+    exame.forEach((l) => out.push(`- ${sanitize(l)}`));
   }
 
-  const manobras = sectionLines(fields, values, "manobras");
+  const manobras = otherFieldsAsLines(fields, values, "manobras");
   if (manobras.length) {
     out.push("Manobras/testes especiais:");
-    manobras.forEach((l) => out.push(`- ${l}`));
+    manobras.forEach((l) => out.push(`- ${sanitize(l)}`));
   }
 
-  const lab = sectionLines(fields, values, "laboratorio");
-  if (lab.length) out.push(`Exames laboratoriais trazidos: ${lab.join("; ")}.`);
+  const lab = [...checkboxesAsProse(fields, values, "laboratorio").positivos, ...otherFieldsAsLines(fields, values, "laboratorio")];
+  if (lab.length) out.push(`Exames laboratoriais trazidos: ${prose(lab)}`);
 
-  const img = sectionLines(fields, values, "imagem");
-  if (img.length) out.push(`Exames de imagem trazidos: ${img.join("; ")}.`);
+  const img = [...checkboxesAsProse(fields, values, "imagem").positivos, ...otherFieldsAsLines(fields, values, "imagem")];
+  if (img.length) out.push(`Exames de imagem trazidos: ${prose(img)}`);
 
-  const esc = sectionLines(fields, values, "escalas");
-  if (esc.length) out.push(`Questionários/escalas aplicados: ${esc.join("; ")}.`);
+  const esc = otherFieldsAsLines(fields, values, "escalas");
+  if (esc.length) out.push(`Questionários/escalas aplicados: ${prose(esc)}`);
 
   out.push("");
   out.push("Por favor, forneça:");
