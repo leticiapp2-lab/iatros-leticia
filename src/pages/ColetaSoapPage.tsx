@@ -6,12 +6,10 @@ import ColetaStepper from "@/features/coleta-soap/components/ColetaStepper";
 import Step1Importar from "@/features/coleta-soap/components/Step1Importar";
 import Step2Preencher from "@/features/coleta-soap/components/Step2Preencher";
 import Step3Prompt from "@/features/coleta-soap/components/Step3Prompt";
-import HistoryPanel from "@/features/coleta-soap/components/HistoryPanel";
 import NewColetaButton from "@/features/coleta-soap/components/NewColetaButton";
 
 const navButtons = [
   { label: "Coleta SOAP", href: "/coleta-soap" },
-  { label: "Consulta Guiada", href: "/consulta" },
   { label: "Critérios Diagnósticos", href: "/criterios" },
   { label: "Fluxograma Diagnóstico", href: "/fluxogramas" },
   { label: "Calculadoras clínicas", href: "/calculadoras" },
@@ -64,7 +62,6 @@ export default function ColetaSoapPage() {
             <span className="text-sm">Voltar ao início</span>
           </Link>
           <div className="flex items-center gap-2 flex-wrap">
-            <HistoryPanel />
             <NewColetaButton />
           </div>
         </div>
