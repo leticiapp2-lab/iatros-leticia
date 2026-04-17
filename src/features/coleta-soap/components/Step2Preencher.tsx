@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
-import { ChevronDown, Plus, Eraser, RefreshCw, FileText, Columns2, X, AlertTriangle, Eye, Check, CircleSlash } from "lucide-react";
+import { ChevronDown, Plus, Eraser, RefreshCw, FileText, Columns2, X, AlertTriangle, Eye, Check, CircleSlash, BookOpen, PanelRightClose, PanelRightOpen } from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { useColetaStore, useProgressoDetalhado } from "@/features/coleta-soap/store";
 import { SECTION_META, type SectionId, type FieldType, type ParsedField } from "@/features/coleta-soap/types";
 import FieldRenderer from "./FieldRenderer";
@@ -7,6 +9,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 const TYPE_ORDER: Record<ParsedField["tipo"], number> = {
+  tristate: 0,
   checkbox: 0,
   radio: 1,
   number: 2,
@@ -101,7 +104,7 @@ export default function Step2Preencher() {
     let pres = 0, aus = 0, np = 0;
     items.forEach((f) => {
       const v = values[f.id];
-      if (f.tipo === "checkbox") {
+      if (f.tipo === "checkbox" || f.tipo === "tristate") {
         if (v?.checked === true) pres++;
         else if (v?.checked === false) aus++;
         else np++;
@@ -117,11 +120,11 @@ export default function Step2Preencher() {
     return { pres, aus, np };
   };
 
-  // Achar a primeira seção com checkbox para mostrar o tutorial
+  // Achar a primeira seção com checkbox/tristate para mostrar o tutorial
   const firstCheckboxFieldId = useMemo(() => {
     for (const s of ALL_SECTIONS) {
       const items = grouped[s.id] ?? [];
-      const first = items.find((f) => f.tipo === "checkbox");
+      const first = items.find((f) => f.tipo === "checkbox" || f.tipo === "tristate");
       if (first) return first.id;
     }
     return null;
@@ -201,7 +204,7 @@ export default function Step2Preencher() {
             const counts = sectionCounts(s.id);
             const filledHere = (det.sectionsFilled.get(s.id) ?? 0);
             const totalHere = (det.sectionsTotal.get(s.id) ?? 0);
-            const hasCheckbox = items.some((f) => f.tipo === "checkbox");
+            const hasCheckbox = items.some((f) => f.tipo === "checkbox" || f.tipo === "tristate");
             return (
               <div key={s.id} className="border border-border rounded-xl bg-card overflow-hidden">
                 <button
