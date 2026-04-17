@@ -133,8 +133,25 @@ export default function Step2Preencher() {
     return null;
   }, [grouped]);
 
+  const hasRaciocinio = Boolean(raciocinioMd?.trim());
+
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-6">
+    <div
+      className={cn(
+        "grid grid-cols-1 gap-6",
+        hasRaciocinio && showRaciocinio
+          ? "lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]"
+          : "lg:grid-cols-[1fr_280px]",
+      )}
+    >
+      {/* COLUNA ESQUERDA — formulário (main + sidebar interna quando não há raciocínio) */}
+      <div
+        className={cn(
+          hasRaciocinio && showRaciocinio
+            ? "grid grid-cols-1 xl:grid-cols-[1fr_240px] gap-6"
+            : "grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-6",
+        )}
+      >
       {/* Conteúdo principal */}
       <div className={cn("space-y-3", twoPanel && "lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0")}>
         {twoPanel && (
