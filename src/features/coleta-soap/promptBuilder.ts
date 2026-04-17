@@ -138,6 +138,18 @@ export function buildSoapPrompt({ contexto, fields, values }: Args): string {
     out.push(sanitize(line));
   }
 
+  // Red flags — sempre destacar (positivos como alerta, negativos como "nega")
+  const rf = checkboxesAsProse(fields, values, "redflags");
+  const rfOutros = otherFieldsAsLines(fields, values, "redflags");
+  const rfPos = [...rf.positivos, ...rfOutros];
+  if (rfPos.length || rf.negativos.length >= 2) {
+    let line = "Red flags pesquisados: ";
+    line += prose(rfPos) || "nenhum positivo.";
+    const neg = negacoes(rf.negativos);
+    if (neg) line += " " + neg;
+    out.push(sanitize(line));
+  }
+
   const hmpAll = [...checkboxesAsProse(fields, values, "hmp").positivos, ...otherFieldsAsLines(fields, values, "hmp")];
   if (hmpAll.length) out.push(`História médica pregressa: ${prose(hmpAll)}`);
 
