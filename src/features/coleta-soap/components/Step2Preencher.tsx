@@ -43,6 +43,9 @@ export default function Step2Preencher() {
   const [showDiscarded, setShowDiscarded] = useState(false);
   const [tutorialVisto, setTutorialVisto] = useState(true);
   const [savedAgo, setSavedAgo] = useState("agora");
+  const raciocinioMd = useColetaStore((s) => s.raciocinioMd);
+  const [showRaciocinio, setShowRaciocinio] = useState(true);
+  const [raciocinioDrawer, setRaciocinioDrawer] = useState(false);
 
   useEffect(() => {
     try {
