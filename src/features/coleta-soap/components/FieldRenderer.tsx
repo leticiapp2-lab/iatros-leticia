@@ -50,9 +50,11 @@ export default function FieldRenderer({ field, value, onChange, onRemove, tutori
     return () => clearTimeout(t);
   }, [showTutorial]);
 
+  const isCheckLike = field.tipo === "checkbox" || field.tipo === "tristate";
+
   // Atalhos de teclado quando o container tem foco
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (field.tipo === "checkbox") {
+    if (isCheckLike) {
       if (e.key === "1" || e.key.toLowerCase() === "s") {
         e.preventDefault();
         onChange({ checked: true });
@@ -191,13 +193,13 @@ export default function FieldRenderer({ field, value, onChange, onRemove, tutori
   return (
     <div
       ref={containerRef}
-      tabIndex={field.tipo === "checkbox" || field.tipo === "radio" ? 0 : -1}
+      tabIndex={isCheckLike || field.tipo === "radio" ? 0 : -1}
       onKeyDown={handleKeyDown}
       className="relative border border-border rounded-lg bg-background p-3 hover:border-[#7B2FBE]/40 focus-within:border-[#7B2FBE]/60 focus-within:ring-2 focus-within:ring-[#7B2FBE]/20 outline-none transition-colors"
     >
       <div className="flex items-start gap-3">
         <div className="flex-1 min-w-0">
-          {field.tipo === "checkbox" && (
+          {isCheckLike && (
             <div className="space-y-2">
               <div className="flex items-start justify-between gap-2">
                 <p className="text-sm text-foreground leading-snug font-semibold flex-1">{field.label}</p>

@@ -1,9 +1,10 @@
-export type FieldType = "checkbox" | "text" | "number" | "radio" | "textarea";
+export type FieldType = "checkbox" | "tristate" | "text" | "number" | "radio" | "textarea";
 
 export type SectionId =
   | "hda"
   | "sintomas"
   | "revisao"
+  | "redflags"
   | "hmp"
   | "medicacoes"
   | "alergias"
@@ -19,19 +20,23 @@ export type SectionId =
 export interface ParsedField {
   id: string;
   secao: SectionId;
+  /** subseção textual livre (ex.: "Exame Neurológico") preservada do parser estruturado */
+  subsecao?: string;
   label: string;
   tipo: FieldType;
   unidade?: string;
   opcoes?: string[];
   placeholder?: string;
+  min?: number;
+  max?: number;
 }
 
 export interface FieldValue {
-  /** for checkbox */
+  /** for checkbox/tristate */
   checked?: boolean;
   /** for text/number/textarea */
   value?: string;
-  /** for radio: 'positivo' | 'negativo' | 'nao_realizado' or other */
+  /** for radio: 'Positivo' | 'Negativo' | 'Não realizado' or other */
   selected?: string;
   /** observação livre adicional */
   obs?: string;
@@ -59,15 +64,16 @@ export const SECTION_META: Record<SectionId, { title: string; order: number }> =
   hda: { title: "História da Doença Atual (HDA)", order: 1 },
   sintomas: { title: "Sintomas Associados", order: 2 },
   revisao: { title: "Revisão de Sistemas", order: 3 },
-  hmp: { title: "História Médica Pregressa", order: 4 },
-  medicacoes: { title: "Medicações em Uso", order: 5 },
-  alergias: { title: "Alergias", order: 6 },
-  familiar: { title: "História Familiar", order: 7 },
-  social: { title: "História Social", order: 8 },
-  vitais: { title: "Sinais Vitais e Antropometria", order: 9 },
-  exameFisico: { title: "Exame Físico (por sistema)", order: 10 },
-  manobras: { title: "Manobras / Testes Especiais", order: 11 },
-  escalas: { title: "Escalas e Questionários", order: 12 },
-  laboratorio: { title: "Exames Laboratoriais", order: 13 },
-  imagem: { title: "Exames de Imagem", order: 14 },
+  redflags: { title: "Red Flags", order: 4 },
+  hmp: { title: "História Médica Pregressa", order: 5 },
+  medicacoes: { title: "Medicações em Uso", order: 6 },
+  alergias: { title: "Alergias", order: 7 },
+  familiar: { title: "História Familiar", order: 8 },
+  social: { title: "História Social", order: 9 },
+  vitais: { title: "Sinais Vitais e Antropometria", order: 10 },
+  exameFisico: { title: "Exame Físico", order: 11 },
+  manobras: { title: "Manobras / Testes Especiais", order: 12 },
+  escalas: { title: "Escalas e Questionários", order: 13 },
+  laboratorio: { title: "Exames Laboratoriais", order: 14 },
+  imagem: { title: "Exames de Imagem", order: 15 },
 };

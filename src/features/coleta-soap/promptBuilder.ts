@@ -16,7 +16,7 @@ function checkboxesAsProse(
   const positivos: string[] = [];
   const negativos: string[] = [];
   fields
-    .filter((f) => f.secao === secao && f.tipo === "checkbox")
+    .filter((f) => f.secao === secao && (f.tipo === "checkbox" || f.tipo === "tristate"))
     .forEach((f) => {
       const v = values[f.id];
       if (!v) return;
@@ -38,7 +38,7 @@ function otherFieldsAsLines(
 ): string[] {
   const out: string[] = [];
   fields
-    .filter((f) => f.secao === secao && f.tipo !== "checkbox")
+    .filter((f) => f.secao === secao && f.tipo !== "checkbox" && f.tipo !== "tristate")
     .forEach((f) => {
       const v = values[f.id];
       if (!v) return;
@@ -134,6 +134,18 @@ export function buildSoapPrompt({ contexto, fields, values }: Args): string {
     let line = "Revisão de sistemas: ";
     line += prose(rosPos) || "—";
     const neg = negacoes(ros.negativos);
+    if (neg) line += " " + neg;
+    out.push(sanitize(line));
+  }
+
+  // Red flags — sempre destacar (positivos como alerta, negativos como "nega")
+  const rf = checkboxesAsProse(fields, values, "redflags");
+  const rfOutros = otherFieldsAsLines(fields, values, "redflags");
+  const rfPos = [...rf.positivos, ...rfOutros];
+  if (rfPos.length || rf.negativos.length >= 2) {
+    let line = "Red flags pesquisados: ";
+    line += prose(rfPos) || "nenhum positivo.";
+    const neg = negacoes(rf.negativos);
     if (neg) line += " " + neg;
     out.push(sanitize(line));
   }

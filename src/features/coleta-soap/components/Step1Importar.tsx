@@ -1,9 +1,13 @@
 import { useColetaStore } from "@/features/coleta-soap/store";
 import { toast } from "sonner";
+import { TEMPLATE_PROMPT_OPENEVIDENCE } from "@/lib/templates";
+import { ClipboardCopy } from "lucide-react";
 
 export default function Step1Importar() {
-  const { contexto, setContexto, textoOriginal, setTextoOriginal, processarTexto } =
-    useColetaStore();
+  const {
+    contexto, setContexto, textoOriginal, setTextoOriginal, processarTexto,
+    formatoInvalido,
+  } = useColetaStore();
 
   const canProcess =
     contexto.idade.trim() &&
@@ -17,8 +21,21 @@ export default function Step1Importar() {
       toast.error("Preencha contexto, queixa principal e cole a resposta do OpenEvidence.");
       return;
     }
-    processarTexto();
+    const r = processarTexto();
+    if (!r.ok) {
+      toast.error("Formato inválido. Use o prompt-modelo (botão acima da caixa de texto).");
+      return;
+    }
     toast.success("Formulário gerado a partir do texto.");
+  };
+
+  const handleCopyTemplate = async () => {
+    try {
+      await navigator.clipboard.writeText(TEMPLATE_PROMPT_OPENEVIDENCE);
+      toast.success("Prompt-modelo copiado. Cole no OpenEvidence para começar.");
+    } catch {
+      toast.error("Não foi possível copiar. Selecione e copie manualmente.");
+    }
   };
 
   const inputCls =
@@ -90,14 +107,32 @@ export default function Step1Importar() {
       </div>
 
       <div>
-        <label className={labelCls}>Resposta completa do OpenEvidence</label>
+        <div className="flex items-center justify-between mb-1.5 flex-wrap gap-2">
+          <label className={labelCls + " mb-0"}>Resposta completa do OpenEvidence</label>
+          <button
+            type="button"
+            onClick={handleCopyTemplate}
+            className="flex items-center gap-1.5 text-xs font-semibold text-[#7B2FBE] border border-[#7B2FBE]/30 hover:bg-[#7B2FBE]/10 transition-colors rounded-md px-3 py-1.5"
+          >
+            <ClipboardCopy className="h-3.5 w-3.5" />
+            📋 Copiar prompt-modelo para o OpenEvidence
+          </button>
+        </div>
         <textarea
           value={textoOriginal}
           onChange={(e) => setTextoOriginal(e.target.value)}
           rows={18}
-          placeholder="Cole aqui a resposta completa do OpenEvidence contendo perguntas sugeridas, escalas, exames físicos e complementares…"
+          placeholder="Cole aqui a resposta do OpenEvidence começando com <<<COLETA>>> e terminando com <<<FIM_RACIOCINIO>>>…"
           className="w-full bg-card border border-border rounded-lg px-4 py-3 text-foreground text-sm outline-none focus:ring-2 focus:ring-[#7B2FBE]/40 resize-y min-h-[300px] font-mono leading-relaxed"
         />
+        {formatoInvalido && (
+          <p className="mt-2 text-xs text-destructive">
+            O texto colado não está no formato esperado. Use o novo prompt-modelo (botão acima)
+            ao iniciar sua conversa no OpenEvidence — a resposta precisa conter
+            <code className="mx-1 px-1 bg-muted rounded">&lt;&lt;&lt;COLETA&gt;&gt;&gt;</code>
+            e <code className="mx-1 px-1 bg-muted rounded">&lt;&lt;&lt;FIM_COLETA&gt;&gt;&gt;</code>.
+          </p>
+        )}
       </div>
 
       <div className="flex justify-end">

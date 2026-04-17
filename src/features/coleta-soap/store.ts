@@ -13,13 +13,15 @@ interface ColetaState {
   fields: ParsedField[];
   values: Record<string, FieldValue>;
   prompt: string;
+  raciocinioMd: string;
   discarded: string[];
+  formatoInvalido: boolean;
   lastSavedAt: number;
 
   setStep: (s: Step) => void;
   setContexto: (patch: Partial<ContextoClinico>) => void;
   setTextoOriginal: (t: string) => void;
-  processarTexto: () => void;
+  processarTexto: () => { ok: boolean };
   reprocessar: () => void;
   setValue: (id: string, patch: Partial<FieldValue>) => void;
   setSectionChecked: (secao: SectionId, checked: boolean | undefined) => void;
@@ -50,7 +52,9 @@ export const useColetaStore = create<ColetaState>()(
       fields: [],
       values: {},
       prompt: "",
+      raciocinioMd: "",
       discarded: [],
+      formatoInvalido: false,
       lastSavedAt: 0,
 
       setStep: (s) => set({ step: s }),
@@ -58,14 +62,31 @@ export const useColetaStore = create<ColetaState>()(
       setTextoOriginal: (t) => set({ textoOriginal: t, lastSavedAt: Date.now() }),
 
       processarTexto: () => {
-        const { fields, discarded } = parseOpenEvidence(get().textoOriginal);
+        const { fields, raciocinioMd, formatoInvalido } = parseOpenEvidence(get().textoOriginal);
+        if (formatoInvalido) {
+          set({ formatoInvalido: true, lastSavedAt: Date.now() });
+          return { ok: false };
+        }
         const hasVitais = fields.some((f) => f.secao === "vitais");
         const all = hasVitais ? fields : [...fields, ...buildVitaisDefault()];
-        set({ fields: all, values: {}, step: 2, discarded, lastSavedAt: Date.now() });
+        set({
+          fields: all,
+          values: {},
+          step: 2,
+          raciocinioMd,
+          discarded: [],
+          formatoInvalido: false,
+          lastSavedAt: Date.now(),
+        });
+        return { ok: true };
       },
 
       reprocessar: () => {
-        const { fields, discarded } = parseOpenEvidence(get().textoOriginal);
+        const { fields, raciocinioMd, formatoInvalido } = parseOpenEvidence(get().textoOriginal);
+        if (formatoInvalido) {
+          set({ formatoInvalido: true, lastSavedAt: Date.now() });
+          return;
+        }
         const hasVitais = fields.some((f) => f.secao === "vitais");
         const all = hasVitais ? fields : [...fields, ...buildVitaisDefault()];
         const oldValues = get().values;
@@ -76,7 +97,7 @@ export const useColetaStore = create<ColetaState>()(
           const v = labelMap.get(f.label.toLowerCase() + "|" + f.secao);
           if (v) newValues[f.id] = v;
         });
-        set({ fields: all, values: newValues, discarded, lastSavedAt: Date.now() });
+        set({ fields: all, values: newValues, raciocinioMd, formatoInvalido: false, lastSavedAt: Date.now() });
       },
 
       setValue: (id, patch) =>
@@ -89,7 +110,7 @@ export const useColetaStore = create<ColetaState>()(
         const { fields, values } = get();
         const next = { ...values };
         fields
-          .filter((f) => f.secao === secao && f.tipo === "checkbox")
+          .filter((f) => f.secao === secao && (f.tipo === "checkbox" || f.tipo === "tristate"))
           .forEach((f) => {
             next[f.id] = { ...next[f.id], checked };
           });
@@ -137,7 +158,9 @@ export const useColetaStore = create<ColetaState>()(
           fields: [],
           values: {},
           prompt: "",
+          raciocinioMd: "",
           discarded: [],
+          formatoInvalido: false,
           lastSavedAt: Date.now(),
         });
       },
@@ -151,11 +174,13 @@ export const useColetaStore = create<ColetaState>()(
         fields: s.fields,
         values: s.values,
         prompt: s.prompt,
-        discarded: s.discarded,
+        raciocinioMd: s.raciocinioMd,
       }),
     },
   ),
 );
+
+const isCheckLike = (t: ParsedField["tipo"]) => t === "checkbox" || t === "tristate";
 
 export function useProgresso(): number {
   const fields = useColetaStore((s) => s.fields);
@@ -164,7 +189,7 @@ export function useProgresso(): number {
   const filled = fields.filter((f) => {
     const v = values[f.id];
     if (!v) return false;
-    if (f.tipo === "checkbox") return v.checked !== undefined;
+    if (isCheckLike(f.tipo)) return v.checked !== undefined;
     if (f.tipo === "radio") return Boolean(v.selected);
     return Boolean(v.value?.trim());
   }).length;
@@ -183,7 +208,7 @@ export function useProgressoDetalhado() {
     const v = values[f.id];
     let isFilled = false;
     if (v) {
-      if (f.tipo === "checkbox") isFilled = v.checked !== undefined;
+      if (isCheckLike(f.tipo)) isFilled = v.checked !== undefined;
       else if (f.tipo === "radio") isFilled = Boolean(v.selected);
       else isFilled = Boolean(v.value?.trim());
     }
