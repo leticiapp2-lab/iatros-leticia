@@ -92,6 +92,28 @@ export default function Step2Preencher() {
         )}
 
         <div className={cn("space-y-3", twoPanel && "lg:order-2")}>
+          {fields.length > 80 && (
+            <div className="flex items-start gap-3 border border-yellow-500/40 bg-yellow-500/10 rounded-xl p-3">
+              <AlertTriangle className="h-5 w-5 text-yellow-600 shrink-0 mt-0.5" />
+              <div className="flex-1 text-xs sm:text-sm text-foreground">
+                <p className="font-semibold mb-0.5">O parser detectou {fields.length} campos.</p>
+                <p className="text-muted-foreground">
+                  Recomendamos revisar o texto colado — talvez haja tabelas ou referências que precisem ser removidas manualmente.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {discarded.length > 0 && (
+            <button
+              onClick={() => setShowDiscarded(true)}
+              className="flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <Eye className="h-3.5 w-3.5" />
+              Ver itens descartados ({discarded.length})
+            </button>
+          )}
+
           {ALL_SECTIONS.map((s) => {
             const items = grouped[s.id] ?? [];
             if (!items.length) return null;
@@ -112,13 +134,14 @@ export default function Step2Preencher() {
                 </button>
                 {open && (
                   <div className="p-3 space-y-2">
-                    {items.map((f) => (
+                    {items.map((f, idx) => (
                       <FieldRenderer
                         key={f.id}
                         field={f}
                         value={values[f.id]}
                         onChange={(patch) => setValue(f.id, patch)}
                         onRemove={() => removeField(f.id)}
+                        showLegend={idx === 0 && f.tipo === "checkbox"}
                       />
                     ))}
                   </div>
